@@ -1,0 +1,17 @@
+TODO:
+
+Complete is_valid_move():
+	1. Fuanction that calculates value of move
+	2. Function that calculates validity of move
+
+Change board state upon playing move:
+	1. Deplete rack of letters used in word
+	2. Refill rack from bag
+	3. Take letters out of bag
+
+Endgame stuff:
+	1. Endgame state logic, finishing the game
+	2. "Giving up"/ending the game ui
+
+Startgame stuff:
+	1. Must use middle tile in beginning
