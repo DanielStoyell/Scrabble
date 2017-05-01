@@ -15,7 +15,7 @@ class Screen:
 
 		#Create player data on top
 		self.playerData = Label(master = self.root, text = "Player data", height = 2, width=30, fg="black")
-		self.playerData.grid(row=1, column=0, sticky = W)
+		self.playerData.grid(row=1, column=0, sticky = W+E)
 
 		#Create the Board
 		w1 = Frame(master = self.root, bg = "papaya whip")
@@ -24,7 +24,7 @@ class Screen:
 		#Start Tile Selection Label 
 		#The coordinates are found in the board logic.
 		self.start_tile_text = Label(master = self.root, text = "Start Tile: ", height = 1, width = 16, fg = "black")
-		self.start_tile_text.grid(row = 3, column = 0, sticky = W)
+		self.start_tile_text.grid(row = 3, column = 0, sticky = W + E)
 
 		self.buttons = []
 		self.start_tile = []
@@ -71,6 +71,10 @@ class Screen:
 		self.enter = Button(master = self.root, text = "Enter", height = 2, width = 18, bg = "chartreuse2", fg = "white", command=(lambda: self.enter_move(Game)))
 		self.enter.grid(row = 12, column = 0, sticky = E + W)
 
+		#Skip Button
+		self.enter = Button(master = self.root, text = "Skip Turn", height = 2, width = 18, bg = "goldenrod2", fg = "firebrick1", command = (lambda: self.skip_move(Game)))
+		self.enter.grid(row = 13, column = 0, sticky = E + W)
+
 		#Error message data
 		self.errorMessage = Label(master = self.root, text = "Invaid move!", height = 2, width=30, fg="black")
 		self.errorMessage.grid(row=1, column=0, sticky = W)
@@ -90,6 +94,11 @@ class Screen:
 	def enter_move(self, Game):
 		print("Entering move")
 		Game.run_turn(self.entryTextbox.get(), self.direction, self.start_tile)
+		self.update(Game)
+
+	def skip_move(self,Game):
+		print("Skipping move")
+		Game.turn += 1
 		self.update(Game)
 
 	def confirm_error(self, Game):
@@ -116,6 +125,13 @@ class Screen:
 		self.playerData["text"] = Game.players[0].get_name() + ": " + str(Game.players[0].get_score()) \
 									+ "      " + Game.players[1].get_name() + ": " + str(Game.players[1].get_score()) \
 									+ "\nCurrent Turn: " + Game.get_current_turn_player().get_name()
+
+		if Game.get_current_turn_player().get_name() == "PLAYER_1":
+			self.rack["text"] = "rack: " + Game.players[0].get_tile_rep()
+		else:
+			self.rack["text"] = "rack: " + Game.players[1].get_tile_rep()
+
+		self.turnlabel["text"] = "Turn: " + str(Game.turn)
 
 		if Game.state == "ai_turn":
 			#Remove human move prompts
