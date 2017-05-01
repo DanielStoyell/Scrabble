@@ -35,6 +35,28 @@ class Game:
 			score, letters_used = self.board.play_move(word, square, direction)
 			player.score += score
 			self.turn += 1
+
+			#Logic for Rack Update
+			print(letters_used)
+			print(player.rack)
+			i = 0
+			while i < len(letters_used):
+				player.rack.remove(letters_used[i])
+				i = i + 1
+			print(player.rack)
+
+			lengthbag = self.bag.get_len_bag()
+			print(lengthbag)
+			
+			if lengthbag == 0:
+				player.rack = player.rack
+			else:
+				player.rack = player.rack + self.bag.draw_tiles(7 - len(player.rack))
+				print(player.rack)
+			
+			lengthbag = self.bag.get_len_bag()
+			print(lengthbag)
+			
 		else:
 			print("Invalid move - trying again!")
 			self.state = "ERROR"
