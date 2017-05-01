@@ -138,7 +138,7 @@ class Board:
 		letters_used = []
 		for i in range(len(word)):
 			if self.get_square(current_square) == " ":
-				self.set_square(current_square, word[i])
+				self.set_square(current_square, word[i].upper())
 				letters_used.append(word[i])
 			if direction == "Vertical":
 				current_square[0] += 1
@@ -170,7 +170,13 @@ class Bag:
 			+  ['E'] * 12
 		random.shuffle(self.bag)
 
+	def get_len_bag(self):
+		return len(self.bag)
+
 	def draw_tiles(self, n):
-		drawn = self.bag[-n:]
-		self.bag = self.bag[:-n]
-		return drawn
+		if n == 0:
+			return []
+		else:
+			drawn = self.bag[-n:]
+			self.bag = self.bag[:-n]
+			return drawn
