@@ -72,12 +72,12 @@ class Screen:
 		self.enter.grid(row = 12, column = 0, sticky = E + W)
 
 		#Skip Button
-		self.enter = Button(master = self.root, text = "Skip Turn", height = 2, width = 18, bg = "goldenrod2", fg = "firebrick1", command = (lambda: self.skip_move(Game)))
-		self.enter.grid(row = 13, column = 0, sticky = E + W)
+		self.skipButton = Button(master = self.root, text = "Skip Turn", height = 2, width = 18, bg = "goldenrod2", fg = "firebrick1", command = (lambda: self.skip_move(Game)))
+		self.skipButton.grid(row = 13, column = 0, sticky = E + W)
 
 		#Error message data
 		self.errorMessage = Label(master = self.root, text = "Invaid move!", height = 2, width=30, fg="black")
-		self.errorMessage.grid(row=1, column=0, sticky = W)
+		self.errorMessage.grid(row=2, column=0, sticky = W)
 		self.errorMessage.grid_remove()
 
 		self.errorButton = Button(master=self.root, text="OK", width=10, height=2, command=lambda : self.confirm_error(Game))
@@ -93,7 +93,7 @@ class Screen:
 	# Someone clicked the enter button. Should quickly pass along available data to main Scrabble.py functions for processing
 	def enter_move(self, Game):
 		print("Entering move")
-		Game.run_turn(self.entryTextbox.get(), self.direction, self.start_tile)
+		Game.run_turn(self.entryTextbox.get().upper(), self.direction, self.start_tile)
 		self.update(Game)
 
 	def skip_move(self,Game):
@@ -112,7 +112,7 @@ class Screen:
 			for j in range(15):
 				square_tile = Game.board.get_square([i,j])
 				if square_tile != " ":
-					self.buttons[i][j]["text"] = square_tile
+					self.buttons[i][j]["text"] = square_tile + "\n" + str(components.letter_values[square_tile])
 					self.buttons[i][j]["bg"] = "#ffe493"
 					self.buttons[i][j]["fg"] = "black"
 					self.buttons[i][j]["font"] = font.Font(family="Helvetica", size="10", weight="bold")
@@ -144,6 +144,7 @@ class Screen:
 			self.alignmentToggle.grid_remove()
 			self.errorButton.grid_remove()
 			self.errorMessage.grid_remove()
+			self.skipButton.grid_remove()
 		elif Game.state == "human_turn":
 			self.errorButton.grid_remove()
 			self.errorMessage.grid_remove()
@@ -155,6 +156,7 @@ class Screen:
 			self.entryTextbox.grid()
 			self.alignmentLabel.grid()
 			self.alignmentToggle.grid()
+			self.skipButton.grid()	
 			#Create AI waiting screen?
 		else:
 			self.start_tile_text.grid_remove()
@@ -164,6 +166,7 @@ class Screen:
 			self.entryTextbox.grid_remove()
 			self.alignmentLabel.grid_remove()
 			self.alignmentToggle.grid_remove()
+			self.skipButton.grid_remove()
 			#Add AI crap
 			self.errorMessage["text"] = Game.message
 			self.errorButton.grid()

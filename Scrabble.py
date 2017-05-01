@@ -30,32 +30,18 @@ class Game:
 
 	def run_turn(self, word=None, direction=None, square=None):
 		player = self.get_current_turn_player()
-		is_valid, message = self.board.is_valid_move(word, direction, square)
-		if is_valid:
-			score, letters_used = self.board.play_move(word, square, direction)
+		is_valid, message = self.board.is_valid_move(word, square[:], direction, player.get_tiles())
+		if is_valid >= 0:
+			score, letters_used = self.board.play_move(word, square[:], direction, player.get_tiles())
 			player.score += score
 			self.turn += 1
 
 			#Logic for Rack Update
-			print(letters_used)
-			print(player.rack)
-			i = 0
-			while i < len(letters_used):
-				player.rack.remove(letters_used[i])
-				i = i + 1
-			print(player.rack)
-
-			lengthbag = self.bag.get_len_bag()
-			print(lengthbag)
+			for letter in letters_used:
+				player.rack.remove(letter)
 			
-			if lengthbag == 0:
-				player.rack = player.rack
-			else:
-				player.rack = player.rack + self.bag.draw_tiles(7 - len(player.rack))
-				print(player.rack)
+			player.rack = player.rack + self.bag.draw_tiles(7 - len(player.rack))
 			
-			lengthbag = self.bag.get_len_bag()
-			print(lengthbag)
 			
 		else:
 			print("Invalid move - trying again!")

@@ -16,32 +16,32 @@ for line in dictFile:
 dictFile.close()
 
 letter_values = {
-	"a": 1,
-	"b": 3,
-	"c": 3,
-	"d": 2,
-	"e": 1,
-	"f": 4,
-	"g": 2,
-	"h": 4,
-	"i": 1,
-	"j": 8,
-	"k": 5,
-	"l": 1,
-	"m": 3,
-	"n": 1,
-	"o": 1,
-	"p": 3,
-	"q": 10,
-	"r": 1,
-	"s": 1,
-	"t": 1,
-	"u": 1,
-	"v": 4,
-	"w": 4,
-	"x": 8,
-	"y": 4,
-	"z": 10,
+	"A": 1,
+	"B": 3,
+	"C": 3,
+	"D": 2,
+	"E": 1,
+	"F": 4,
+	"G": 2,
+	"H": 4,
+	"I": 1,
+	"J": 8,
+	"K": 5,
+	"L": 1,
+	"M": 3,
+	"N": 1,
+	"O": 1,
+	"P": 3,
+	"Q": 10,
+	"R": 1,
+	"S": 1,
+	"T": 1,
+	"U": 1,
+	"V": 4,
+	"W": 4,
+	"X": 8,
+	"Y": 4,
+	"Z": 10,
 	"?": 0
 }
 
@@ -133,7 +133,10 @@ class Board:
 	def get_square(self, square):
 		return self.board[square[0]][square[1]]
 
-	def play_move(self, word, start_square, direction):
+	def play_move(self, word, start_square, direction, rack):
+		score, message = self.is_valid_move(word, start_square[:], direction, rack)
+		if score == -1:
+			return -1, []
 		current_square = start_square
 		letters_used = []
 		for i in range(len(word)):
@@ -144,16 +147,121 @@ class Board:
 				current_square[0] += 1
 			else:
 				current_square[1] += 1
-		return 10, letters_used
+		return score, letters_used
 
-	def is_valid_move(self, word, direction, square):
-		return True, "Invalid move! Try again!"
-		# if not self.is_valid_square(current_square):
-		# 	return (False, "Invalid square (outside boundaries of board)")
-		# elif self.get_square(current_square) != letter:
-		# 	return (False, "Tiles already placed that are not compatible with word")
+	def is_valid_move(self, word, square, direction, rack):
+		#Returns the number of points, and a message about the move.
+		# -1 if move is invalid, and the message is why
+		# direction reassign for effiency
+		if direction == "Vertical":
+			direction = True
+		else:
+			direction = False
+		current_square = square
+		score = 0
+		word_multiplier = 1
+		rack = rack[:] #might convert to alt form eventually
 
-		# return (True, score)
+		if word not in dictionary:
+			return -1, word + " not in dictionary"
+
+		for i in range(len(word)):
+			if not self.is_valid_square(square):
+				return -1, "Out of board bounds"
+			if self.get_square(current_square) == " ":
+				try:
+					print(str(rack))
+					print(word[i])
+					rack.remove(word[i])
+				except:
+					return -1, "Letter used that is not in rack"
+				modifier = modifiers[square[0]][square[1]]
+				square_multiplier = 1
+				if modifier != "  ":
+					square_multiplier = 2 if modifier[0] == "D" else 3
+					if modifier[1] == "W":
+						word_multiplier *= square_multiplier
+						score += letter_values[word[i]]
+					else:
+						score += letter_values[word[i]]*square_multiplier
+				else:
+					score += letter_values[word[i]]
+				#TODO: CHECK FOR BRANCHING WORDS
+				if direction:
+					border_right = [current_square[0], current_square[1]+1]
+					border_left = [current_square[0], current_square[1]-1]
+					if self.get_square(border_left) != " " or self.get_square(border_right) != " ":
+						branch_score, branch_word = self.get_branch_word_score(current_square, not direction, word[i])
+						if branch_score == -1:
+							return -1, branch_word + " is not a valid word"
+						else:
+							score += branch_score
+				else:
+					border_bottom = [current_square[0]+1, current_square[1]]
+					border_top = [current_square[0]-1, current_square[1]]
+					if self.get_square(border_top) != " " or self.get_square(border_bottom) != " ":
+						branch_score, branch_word = self.get_branch_word_score(current_square, not direction, word[i])
+						if branch_score == -1:
+							return -1, branch_word + " is not a valid word"
+						else:
+							score += branch_score
+			else:
+				if self.get_square(current_square) == word[i]:
+					score += letter_values[word[i]]
+				else:
+					return -1, "Letter exists on move space that is not aligned with word"
+
+			if direction:
+				current_square[0] += 1
+			else:
+				current_square[1] += 1
+
+		return score*word_multiplier, "Valid move"
+
+	def get_branch_word_score(self, square, direction, letter):
+		#Only guarantee about passed in square is that the word contains it
+		#This is ugly af I know
+		word = letter
+		score = letter_values[letter]
+		mult = 1
+		modifier = modifiers[square[0]][square[1]]
+		if modifier != "  ":
+			if modifier[1] == "L":
+				score *= 2 if modifier[0] == "D" else 3
+			else:
+				mult = 2 if modifier[0] == "D" else 3
+		p = square[:]
+		if direction:
+			p[0] += 1
+			while self.get_square(p) != " ":
+				letter =  self.get_square(p)
+				word = word + letter
+				score += letter_values[letter]
+				p[0] += 1
+			p[0] = square[0]-1
+			while self.get_square(p) != " ":
+				letter =  self.get_square(p)
+				word = letter + word
+				score += letter_values[letter]
+				p[0] -= 1
+		else:
+			p[1] += 1
+			while self.get_square(p) != " ":
+				letter =  self.get_square(p)
+				word = word + letter
+				score += letter_values[letter]
+				p[1] += 1
+			p[1] = square[1]-1
+			while self.get_square(p) != " ":
+				letter =  self.get_square(p)
+				word = letter + word
+				score += letter_values[letter]
+				p[1] -= 1
+		print(word)
+		print(score*mult)
+		if word not in dictionary:
+			return -1, word
+		return score*mult, word
 
 	def is_valid_square(self, square):
 		return square[0] >= 0 and square[1] >=0 and square[0] <= 14 and square[1] <= 14
@@ -161,7 +269,7 @@ class Board:
 class Bag:
 	def __init__(self):
 		self.bag = ['J','K','Q','X','Z'] * 1 \
-			+  ['?','B','C','F','H','M','P','V','W','Y'] * 2 \
+			+  ['B','C','F','H','M','P','V','W','Y'] * 2 \
 			+  ['G'] * 3 \
 			+  ['D','L','S','U'] * 4 \
 			+  ['N','R','T'] * 6 \
@@ -174,6 +282,7 @@ class Bag:
 		return len(self.bag)
 
 	def draw_tiles(self, n):
+		n = min(len(self.bag), n)
 		if n == 0:
 			return []
 		else:
