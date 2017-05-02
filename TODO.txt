@@ -22,3 +22,4 @@ Start project report:
 Bugs:
 	1. Out of bounds on branch word detection
 	2. Add bordering necessity to valid move calculation
+	3. At least one new tile requirement to is_valid_move
