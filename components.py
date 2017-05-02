@@ -170,8 +170,6 @@ class Board:
 				return -1, "Out of board bounds"
 			if self.get_square(current_square) == " ":
 				try:
-					print(str(rack))
-					print(word[i])
 					rack.remove(word[i])
 				except:
 					return -1, "Letter used that is not in rack"
@@ -215,7 +213,7 @@ class Board:
 				current_square[0] += 1
 			else:
 				current_square[1] += 1
-
+		print(word)
 		return score*word_multiplier, "Valid move"
 
 	def get_branch_word_score(self, square, direction, letter):
@@ -258,7 +256,6 @@ class Board:
 				score += letter_values[letter]
 				p[1] -= 1
 		print(word)
-		print(score*mult)
 		if word not in dictionary:
 			return -1, word
 		return score*mult, word

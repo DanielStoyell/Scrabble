@@ -1,17 +1,24 @@
 TODO:
 
-Complete is_valid_move():
-	1. Fuanction that calculates value of move
-	2. Function that calculates validity of move
-
-Change board state upon playing move:
-	1. Deplete rack of letters used in word
-	2. Refill rack from bag
-	3. Take letters out of bag
-
 Endgame stuff:
 	1. Endgame state logic, finishing the game
 	2. "Giving up"/ending the game ui
+	3. Assigning points from rack remainders
+	4. Seeing if there are no move left
 
 Startgame stuff:
 	1. Must use middle tile in beginning
+
+AI stuff:
+	1. UI for waiting on the AI to move
+	2. Calculation of potential moveset
+
+Start project report:
+	1. Section on scrabble game design
+	2. Section on is_valid_move
+	3. Section on brute force calculation
+	4. Section on limitations (no tile swapping or blank tiles)
+
+Bugs:
+	1. Out of bounds on branch word detection
+	2. Add bordering necessity to valid move calculation
