@@ -1,6 +1,7 @@
 import graphics
 import random
 import components
+import AI
 
 class Game:
 	''' Initializer for game of scrabble

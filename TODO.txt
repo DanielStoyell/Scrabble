@@ -6,9 +6,6 @@ Endgame stuff:
 	3. Assigning points from rack remainders
 	4. Seeing if there are no move left
 
-Startgame stuff:
-	1. Must use middle tile in beginning
-
 AI stuff:
 	1. UI for waiting on the AI to move
 	2. Calculation of potential moveset
@@ -21,5 +18,3 @@ Start project report:
 
 Bugs:
 	1. Out of bounds on branch word detection
-	2. Add bordering necessity to valid move calculation
-	3. At least one new tile requirement to is_valid_move

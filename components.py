@@ -126,8 +126,10 @@ class Board:
 					  [' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
 					  [' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '],
 					  [' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ']]
+		self.isEmpty = True
 
 	def set_square(self, square, letter):
+		self.isEmpty = False
 		self.board[square[0]][square[1]] = letter
 
 	def get_square(self, square):
@@ -165,10 +167,18 @@ class Board:
 		if word not in dictionary:
 			return -1, word + " not in dictionary"
 
+		borders = False
+		contains = False
+		atLeastOne = False
+		containsCenter = False
+
 		for i in range(len(word)):
 			if not self.is_valid_square(square):
 				return -1, "Out of board bounds"
 			if self.get_square(current_square) == " ":
+				if current_square[0] == 7 and current_square[1] == 7:
+					containsCenter = True
+				atLeastOne = True
 				try:
 					rack.remove(word[i])
 				except:
@@ -184,11 +194,12 @@ class Board:
 						score += letter_values[word[i]]*square_multiplier
 				else:
 					score += letter_values[word[i]]
-				#TODO: CHECK FOR BRANCHING WORDS
+				#CHECK FOR BRANCHING WORDS
 				if direction:
 					border_right = [current_square[0], current_square[1]+1]
 					border_left = [current_square[0], current_square[1]-1]
-					if self.get_square(border_left) != " " or self.get_square(border_right) != " ":
+					if (self.is_valid_square(border_left) and self.get_square(border_left) != " ") or (self.is_valid_square(border_right) and self.get_square(border_right) != " "):
+						borders = True
 						branch_score, branch_word = self.get_branch_word_score(current_square, not direction, word[i])
 						if branch_score == -1:
 							return -1, branch_word + " is not a valid word"
@@ -197,13 +208,15 @@ class Board:
 				else:
 					border_bottom = [current_square[0]+1, current_square[1]]
 					border_top = [current_square[0]-1, current_square[1]]
-					if self.get_square(border_top) != " " or self.get_square(border_bottom) != " ":
+					if (self.is_valid_square(border_top) and self.get_square(border_top) != " ") or (self.is_valid_square(border_bottom) and self.get_square(border_bottom) != " "):
+						borders = True
 						branch_score, branch_word = self.get_branch_word_score(current_square, not direction, word[i])
 						if branch_score == -1:
 							return -1, branch_word + " is not a valid word"
 						else:
 							score += branch_score
 			else:
+				contains = True
 				if self.get_square(current_square) == word[i]:
 					score += letter_values[word[i]]
 				else:
@@ -213,6 +226,15 @@ class Board:
 				current_square[0] += 1
 			else:
 				current_square[1] += 1
+
+		if self.isEmpty:
+			if not containsCenter:
+				return -1, "First word played must contain center tile"
+		else:
+			if not (borders or contains):
+				return -1, "Word must contain or border an existing word"
+		if not atLeastOne:
+			return -1, "Word must contain at least 1 new tile"
 		print(word)
 		return score*word_multiplier, "Valid move"
 
@@ -231,26 +253,26 @@ class Board:
 		p = square[:]
 		if direction:
 			p[0] += 1
-			while self.get_square(p) != " ":
+			while self.is_valid_square(p) and self.get_square(p) != " ":
 				letter =  self.get_square(p)
 				word = word + letter
 				score += letter_values[letter]
 				p[0] += 1
 			p[0] = square[0]-1
-			while self.get_square(p) != " ":
+			while self.is_valid_square(p) and self.get_square(p) != " ":
 				letter =  self.get_square(p)
 				word = letter + word
 				score += letter_values[letter]
 				p[0] -= 1
 		else:
 			p[1] += 1
-			while self.get_square(p) != " ":
+			while self.is_valid_square(p) and self.get_square(p) != " ":
 				letter =  self.get_square(p)
 				word = word + letter
 				score += letter_values[letter]
 				p[1] += 1
 			p[1] = square[1]-1
-			while self.get_square(p) != " ":
+			while self.is_valid_square(p) and self.get_square(p) != " ":
 				letter =  self.get_square(p)
 				word = letter + word
 				score += letter_values[letter]
