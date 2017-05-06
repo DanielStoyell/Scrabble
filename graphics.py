@@ -1,5 +1,7 @@
 import random
 import components
+import sys
+import os
 from tkinter import font
 from tkinter import *
 
@@ -76,13 +78,27 @@ class Screen:
 		self.skipButton.grid(row = 13, column = 0, sticky = E + W)
 
 		#Error message data
-		self.errorMessage = Label(master = self.root, text = "Invaid move!", height = 2, width=30, fg="black")
-		self.errorMessage.grid(row=2, column=0, sticky = W)
+		self.errorMessage = Label(master = self.root, text = "Invalid move!", height = 2, width=30, fg="black")
+		self.errorMessage.grid(row=2, column=0, sticky = W + E)
 		self.errorMessage.grid_remove()
 
-		self.errorButton = Button(master=self.root, text="OK", width=10, height=2, command=lambda : self.confirm_error(Game))
-		self.errorButton.grid(row=6,column=0,sticky=W)
+		self.errorButton = Button(master=self.root, text="OK", width=15, height=2, command=lambda : self.confirm_error(Game))
+		self.errorButton.grid(row=6,column=0,sticky= W + E)
 		self.errorButton.grid_remove()
+
+		#Give Up Button
+		self.endButton = Button(master = self.root, text = "Give Up!", height = 2, width = 18, bg = "orange red", fg = "yellow", command = (lambda: self.end_game_move(Game)))
+		self.endButton.grid(row = 14, column = 0, sticky = E + W)
+
+		self.quitMessage = Label(master = self.root, text = "Result", height = 2, width=30, fg="black")
+		self.quitMessage.grid(row=2, column=0, sticky = W + E)
+		self.quitMessage.grid_remove()
+
+		self.quitButton = Button(master=self.root, text = "Quit", width = 15, height = 2, command = lambda: self.quit_game(Game))
+		self.quitButton.grid(row=6, column=0, sticky = E)
+
+		self.restartButton = Button(master=self.root, text = "Restart", width = 15, height = 2, command = lambda: self.restart_game(Game))
+		self.restartButton.grid(row=6, column=0, sticky = W)
 
 		#render initial board
 		self.update(Game)
@@ -104,6 +120,22 @@ class Screen:
 	def confirm_error(self, Game):
 		print("confirm error")
 		Game.state = "human_turn"
+		self.update(Game)
+
+	def end_game_move(self,Game):
+		print("giving up")
+		Game.state = "end_game"
+		self.update(Game)
+	
+	def quit_game(self, Game):
+		print("closing window")
+		self.root.destroy()
+
+	def restart_game(self, Game):
+		print("restarting game")
+		player1 = ["PLAYER_1", False]
+		player2 = ["PLAYER_2", False]
+		main = Game.__init__(player1, player2)
 		self.update(Game)
 
 	# Re-renders board
@@ -133,6 +165,8 @@ class Screen:
 
 		self.turnlabel["text"] = "Turn: " + str(Game.turn)
 
+		self.entryTextbox.delete(0, 'end')
+
 		if Game.state == "ai_turn":
 			#Remove human move prompts
 			self.start_tile_text.grid_remove()
@@ -148,6 +182,9 @@ class Screen:
 		elif Game.state == "human_turn":
 			self.errorButton.grid_remove()
 			self.errorMessage.grid_remove()
+			self.quitButton.grid_remove()
+			self.quitMessage.grid_remove()
+			self.restartButton.grid_remove()
 			#Add back human prompts
 			self.start_tile_text.grid()
 			self.rack.grid()
@@ -156,8 +193,24 @@ class Screen:
 			self.entryTextbox.grid()
 			self.alignmentLabel.grid()
 			self.alignmentToggle.grid()
-			self.skipButton.grid()	
+			self.skipButton.grid()
+			self.endButton.grid()
 			#Create AI waiting screen?
+		elif Game.state == "ERROR":
+			self.start_tile_text.grid_remove()
+			self.rack.grid_remove()
+			self.enter.grid_remove()
+			self.entrylabel.grid_remove()
+			self.entryTextbox.grid_remove()
+			self.alignmentLabel.grid_remove()
+			self.alignmentToggle.grid_remove()
+			self.skipButton.grid_remove()
+			self.endButton.grid_remove()
+			self.restartButton.grid_remove()
+			#Add AI crap
+			self.errorMessage["text"] = Game.message
+			self.errorButton.grid()
+			self.errorMessage.grid()
 		else:
 			self.start_tile_text.grid_remove()
 			self.rack.grid_remove()
@@ -167,7 +220,15 @@ class Screen:
 			self.alignmentLabel.grid_remove()
 			self.alignmentToggle.grid_remove()
 			self.skipButton.grid_remove()
+			self.endButton.grid_remove()
 			#Add AI crap
-			self.errorMessage["text"] = Game.message
-			self.errorButton.grid()
-			self.errorMessage.grid()
+			if Game.players[0].get_score() > Game.players[1].get_score():
+				self.quitMessage["text"] = "Player 1 won the game! " + str(Game.players[0].get_score()) + " to " + str(Game.players[1].get_score())
+			elif Game.players[1].get_score() > Game.players[0].get_score():
+				self.quitMessage["text"] = "Player 2 won the game! " + str(Game.players[1].get_score()) + " to " + str(Game.players[0].get_score())
+			else:
+				self.quitMessage["text"] = "It's a tie!"
+			self.quitButton.grid()
+			self.quitMessage.grid()
+			self.restartButton.grid()
+
