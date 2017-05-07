@@ -98,6 +98,12 @@ class Player:
 			output += delim + tile
 			delim = ", "
 		return output
+	
+	def get_rack_score(self):
+		rack_score = 0
+		for i in self.rack:
+			rack_score += letter_values[i]
+		return rack_score
 
 	def find_move(self, board):
 		if self.ai:
