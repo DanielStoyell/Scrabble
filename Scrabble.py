@@ -37,14 +37,14 @@ class Game:
 	def run_turn(self, word=None, direction=None, square=None):
 		player = self.get_current_turn_player()
 		opponent = self.get_next_turn_player()
-		is_valid, message = self.board.is_valid_move(word, square[:], direction, player.get_tiles(), self.turn)
+		is_valid, message = self.board.is_valid_move(word, square[:], direction, player.get_tiles())
 		if len(player.rack) == 0:
 			player.score += opponent.get_rack_score()
 			opponent.score -= opponent.get_rack_score()
 			print("Game End Sequence Initiated - No tiles left in rack")
 			self.state = "end_game"
 		elif is_valid >= 0:
-			score, letters_used = self.board.play_move(word, square[:], direction, player.get_tiles(), self.turn)
+			score, letters_used = self.board.play_move(word, square[:], direction, player.get_tiles())
 			player.score += score
 			self.turn += 1
 
