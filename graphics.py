@@ -1,7 +1,5 @@
 import random
 import components
-import sys
-import os
 from tkinter import font
 from tkinter import *
 
@@ -124,7 +122,7 @@ class Screen:
 
 	def end_game_move(self,Game):
 		print("giving up")
-		Game.state = "end_game"
+		Game.end_game() 
 		self.update(Game)
 	
 	def quit_game(self, Game):
@@ -133,6 +131,7 @@ class Screen:
 
 	def restart_game(self, Game):
 		print("restarting game")
+		self.root.destroy()
 		player1 = ["PLAYER_1", False]
 		player2 = ["PLAYER_2", False]
 		main = Game.__init__(player1, player2)
@@ -222,13 +221,7 @@ class Screen:
 			self.skipButton.grid_remove()
 			self.endButton.grid_remove()
 			#Add AI crap
-			if Game.players[0].get_score() > Game.players[1].get_score():
-				self.quitMessage["text"] = "Player 1 won the game! " + str(Game.players[0].get_score()) + " to " + str(Game.players[1].get_score())
-			elif Game.players[1].get_score() > Game.players[0].get_score():
-				self.quitMessage["text"] = "Player 2 won the game! " + str(Game.players[1].get_score()) + " to " + str(Game.players[0].get_score())
-			else:
-				self.quitMessage["text"] = "It's a tie!"
+			self.quitMessage["text"] = Game.message
 			self.quitButton.grid()
 			self.quitMessage.grid()
 			self.restartButton.grid()
-
