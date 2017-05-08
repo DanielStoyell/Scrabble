@@ -89,7 +89,7 @@ class Player:
 		return self.name
 
 	def get_tiles(self):
-		return self.rack
+		return self.rack[:]
 
 	def get_tile_rep(self):
 		output = ""
@@ -163,6 +163,10 @@ class Board:
 		#Returns the number of points, and a message about the move.
 		# -1 if move is invalid, and the message is why
 		# direction reassign for effiency
+
+		if (len(square) == 0):
+			return -1, "Please choose a start square"
+
 		if direction == "Vertical":
 			direction = True
 		else:
@@ -171,6 +175,18 @@ class Board:
 		score = 0
 		word_multiplier = 1
 		rack = rack[:] #might convert to alt form eventually
+
+		if direction:
+			tile_before = [square[0], square[1]-1]
+			tile_after = [square[0], square[1]+len(word)]
+		else:
+			tile_before = [square[0]-1, square[1]]
+			tile_after = [square[0]+len(word), square[1]]
+
+		if (self.is_valid_square(tile_before) and self.get_square(tile_before) != " "):
+			return -1, "Please enter full word you are creating"
+		if (self.is_valid_square(tile_after) and self.get_square(tile_after) != " "):
+			return -1, "Please enter full word you are creating"
 
 		if word not in dictionary:
 			return -1, word + " not in dictionary"
@@ -243,7 +259,6 @@ class Board:
 				return -1, "Word must contain or border an existing word"
 		if not atLeastOne:
 			return -1, "Word must contain at least 1 new tile"
-		print(word)
 		return score*word_multiplier, "Valid move"
 
 	def get_branch_word_score(self, square, direction, letter):
@@ -285,7 +300,6 @@ class Board:
 				word = letter + word
 				score += letter_values[letter]
 				p[1] -= 1
-		print(word)
 		if word not in dictionary:
 			return -1, word
 		return score*mult, word

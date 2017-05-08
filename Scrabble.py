@@ -22,10 +22,10 @@ class Game:
 		self.players = [player1, player2]
 		if self.get_current_turn_player().is_ai():
 			self.state = "ai_turn"
+			self.run_turn("ai_turn")
 		else:
 			self.state = "human_turn"
 		self.screen = graphics.Screen(self)
-		self.run_turn("startup")
 		self.screen.root.mainloop()
 
 	def get_current_turn_player(self):
@@ -61,22 +61,20 @@ class Game:
 				print("Invalid move - trying again!")
 				self.state = "ERROR"
 				self.message = message
-		elif state == "startup":
-			if player.is_ai():
-				self.state == "ai_turn"
-				self.screen.update(self)
-				self.run_turn("ai_turn")
 				return
 		elif state == "ai_turn":
 			print("AI choosing move")
 			ai_move = AI.get_AI_move(self.board, player)
 			if ai_move["type"] == "word":
 				score, letters_used = self.board.play_move(ai_move["word"], ai_move["square"], ai_move["direction"], player.get_tiles())
-				player.score += score
+				if score > -1:
+					player.score += score
 
-				for letter in letters_used:
-					player.rack.remove(letter)
-				player.rack = player.rac + self.bag.draw_tiles(7 - len(player.rack))
+					for letter in letters_used:
+						player.rack.remove(letter)
+					player.rack = player.rack + self.bag.draw_tiles(7 - len(player.rack))
+				else:
+					print("The ai fucked up")
 			else:
 				print("Ai chose to skip")
 
