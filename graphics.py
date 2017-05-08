@@ -102,12 +102,14 @@ class Screen:
 		self.update(Game)
 
 		#Runs actual game
-		self.root.mainloop()
+		self.root.update_idletasks()
+		self.root.update()
+		#self.root.mainloop()
 
 	# Someone clicked the enter button. Should quickly pass along available data to main Scrabble.py functions for processing
 	def enter_move(self, Game):
 		print("Entering move")
-		Game.run_turn(self.entryTextbox.get().upper(), self.direction, self.start_tile)
+		Game.run_turn("human_turn", self.entryTextbox.get().upper(), self.direction, self.start_tile)
 		self.update(Game)
 
 	def skip_move(self,Game):
@@ -178,6 +180,10 @@ class Screen:
 			self.errorButton.grid_remove()
 			self.errorMessage.grid_remove()
 			self.skipButton.grid_remove()
+			self.quitButton.grid_remove()
+			self.quitMessage.grid_remove()
+			self.restartButton.grid_remove()
+			self.endButton.grid_remove()
 		elif Game.state == "human_turn":
 			self.errorButton.grid_remove()
 			self.errorMessage.grid_remove()
@@ -225,3 +231,6 @@ class Screen:
 			self.quitButton.grid()
 			self.quitMessage.grid()
 			self.restartButton.grid()
+
+		self.root.update_idletasks()
+		self.root.update()
