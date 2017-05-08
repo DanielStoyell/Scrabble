@@ -1,10 +1,7 @@
 TODO:
 
 Endgame stuff:
-	1. Endgame state logic, finishing the game
-	2. "Giving up"/ending the game ui
 	3. Assigning points from rack remainders
-	4. Seeing if there are no move left
 
 AI stuff:
 	1. UI for waiting on the AI to move
@@ -15,6 +12,3 @@ Start project report:
 	2. Section on is_valid_move
 	3. Section on brute force calculation
 	4. Section on limitations (no tile swapping or blank tiles)
-
-Bugs:
-	1. Out of bounds on branch word detection

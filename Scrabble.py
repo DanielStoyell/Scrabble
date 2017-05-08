@@ -1,7 +1,6 @@
 import graphics
 import random
 import components
-import AI
 
 class Game:
 	''' Initializer for game of scrabble
@@ -50,7 +49,7 @@ class Game:
 			self.message = message
 
 player1 = ["PLAYER_1", False]
-player2 = ["PLAYER_2", False]
+player2 = ["PLAYER_2", True]
 
 print("Starting game....")
 

@@ -37,11 +37,12 @@ class AI:
 
 	def anagram_checker(self, pattern, base, rack, board):
 		# 'pattern' is of the form "_____i__e______", is a full row or column of the board
-		# 'base' is an index into pattern. Generatd words must contain base
+		# 'base' is an index into pattern. Generated words must contain base
 		# Checks all possible moves that comply with pattern, and runs is_valid_move
 		return []
 
 	def choose_move(self, moves, board, player):
+		#Given a list of moves, finds the "best" and returns it. Best is defined through ai crap
 		return {}
 
 	def get_AI_move(self, board, player):
