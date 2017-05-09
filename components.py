@@ -193,7 +193,7 @@ class Board:
 
 		borders = False
 		contains = False
-		atLeastOne = False
+		lettersUsed = 0
 		containsCenter = False
 
 		for i in range(len(word)):
@@ -202,7 +202,7 @@ class Board:
 			if self.get_square(current_square) == " ":
 				if current_square[0] == 7 and current_square[1] == 7:
 					containsCenter = True
-				atLeastOne = True
+				lettersUsed += 1
 				try:
 					rack.remove(word[i])
 				except:
@@ -257,10 +257,16 @@ class Board:
 		else:
 			if not (borders or contains):
 				return -1, "Word must contain or border an existing word"
-		if not atLeastOne:
+		if lettersUsed < 1:
 			return -1, "Word must contain at least 1 new tile"
+		elif lettersUsed == 7:
+			bingo = 50
+		elif lettersUsed > 7:
+			return -1, "More letters used than in rack"
+		else:
+			bingo = 0
 
-		return score*word_multiplier, "Valid move"
+		return score*word_multiplier + bingo, "Valid move"
 
 	def get_branch_word_score(self, square, direction, letter):
 		#Only guarantee about passed in square is that the word contains it

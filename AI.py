@@ -1,5 +1,6 @@
 import components
 from itertools import permutations
+import time
 
 """
 Example move:
@@ -121,14 +122,15 @@ def fill_pattern(perm, pattern, base, pos):
 
 def choose_move(moves, board, player):
 	#Given a list of moves, finds the "best" and returns it. Best is defined through ai crap
-	if (len(moves)) > 1:
+	if (len(moves)) >= 1:
 		bestScore = 0
 		for move in moves:
+			print(move_rep(move))
 			if move["score"] > bestScore:
 				bestScore = move["score"]
 				bestMove = move
 		return bestMove
-	else:
+	else:	
 		return {"type":"skip"}
 
 def get_AI_move(board, player):
@@ -136,12 +138,20 @@ def get_AI_move(board, player):
 		moves = anagram_checker(" "*15, 7, player.rack, "Horizontal", [7,7], board)
 	else:
 		playable_squares = get_playable_squares(board)
+		start = time.clock()
 		moves = []
 		for square in playable_squares:
 			moves += find_moves(square, board, player)
+		# REENABLE FOR DATA COLLECTION WHEN THE SCRAPING IS FIXED
+		# elapsed = time.clock() - start
+		# with open('moveScrape1.csv', 'a') as f:
+		# 	f.write(str(len(playable_squares)) + "," + str(elapsed) + "\n")
 
 	move = choose_move(moves, board, player)
+	print("PLAYING | " + move_rep(move))
 	return move 
 
 def move_rep(move):
+	if move['type'] == "skip":
+		return "SKIP"
 	return "Word: " + move["word"] + " | Score: " + str(move["score"]) + " | Square: " + str(move["square"]) + " | Direction: " + move["direction"]
