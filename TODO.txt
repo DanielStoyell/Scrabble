@@ -1,11 +1,14 @@
 TODO:
 
-Endgame stuff:
-	3. Assigning points from rack remainders
+Misc:
+	1.Add bingo!
 
 AI stuff:
-	1. UI for waiting on the AI to move
-	2. Calculation of potential moveset
+	1. Heavily optimize brute force move scraping
+		i. Cache/check for redundancy as much as possible
+		ii. Better data structures
+	2. Fix directional bug?
+		i. Seems to only build down and right, then gives up/can't find moves when it can't
 
 Start project report:
 	1. Section on scrabble game design

@@ -127,23 +127,21 @@ def choose_move(moves, board, player):
 			if move["score"] > bestScore:
 				bestScore = move["score"]
 				bestMove = move
-		print("PLAYING: ||| " + move_rep(bestMove))
 		return bestMove
 	else:
 		return {"type":"skip"}
 
 def get_AI_move(board, player):
-	playable_squares = get_playable_squares(board)
-	moves = []
-	for square in playable_squares:
-		moves += find_moves(square, board, player)
-
-	print(str(player.get_tiles()))
-	for move in moves:
-		print(move_rep(move))
+	if board.isEmpty:
+		moves = anagram_checker(" "*15, 7, player.rack, "Horizontal", [7,7], board)
+	else:
+		playable_squares = get_playable_squares(board)
+		moves = []
+		for square in playable_squares:
+			moves += find_moves(square, board, player)
 
 	move = choose_move(moves, board, player)
-	return move #SOOO SMART
+	return move 
 
 def move_rep(move):
 	return "Word: " + move["word"] + " | Score: " + str(move["score"]) + " | Square: " + str(move["square"]) + " | Direction: " + move["direction"]

@@ -2,6 +2,7 @@ import graphics
 import random
 import components
 import AI
+import sys
 
 class Game:
 	''' Initializer for game of scrabble
@@ -20,16 +21,16 @@ class Game:
 		player1 = components.Player(player0info[0], self.bag.draw_tiles(7), player0info[1])
 		player2 = components.Player(player1info[0], self.bag.draw_tiles(7), player1info[1])
 		self.players = [player1, player2]
+		self.screen = graphics.Screen(self)
 		if self.get_current_turn_player().is_ai():
 			self.state = "ai_turn"
 			self.run_turn("ai_turn")
 		else:
 			self.state = "human_turn"
-		self.screen = graphics.Screen(self)
 		self.screen.root.mainloop()
 
 	def get_current_turn_player(self):
-		return self.players[self.turn % 2]
+		return self.players[(self.turn-1) % 2]
 
 	def get_next_turn_player(self):
 		if self.get_current_turn_player() == self.players[0]:
@@ -101,9 +102,21 @@ class Game:
 			self.message = opponent.get_name() + " won the game! " + str(opponent.score) + " to " + str(player.score)
 		else:
 			self.message = "It was a tie! " + str(player.score) + " to " + str(opponent.score)
-	
-player1 = ["PLAYER_1", True]
-player2 = ["PLAYER_2", False]
+
+if len(sys.argv[1:]) == 2:
+	types = [False, False]
+	for i in [0,1]:
+		if sys.argv[i+1].lower() == "ai":
+			types[i] = True
+		elif sys.argv[i+1].lower() == "human":
+			types[i] = False
+		else:
+			print("Unrecognized player type")
+			sys.exit()
+
+
+player1 = ["PLAYER_1", types[0]]
+player2 = ["PLAYER_2", types[1]]
 
 print("Starting game....")
 

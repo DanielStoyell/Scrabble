@@ -171,17 +171,17 @@ class Board:
 			direction = True
 		else:
 			direction = False
-		current_square = square
+		current_square = square[:]
 		score = 0
 		word_multiplier = 1
 		rack = rack[:] #might convert to alt form eventually
 
 		if direction:
-			tile_before = [square[0], square[1]-1]
-			tile_after = [square[0], square[1]+len(word)]
-		else:
 			tile_before = [square[0]-1, square[1]]
 			tile_after = [square[0]+len(word), square[1]]
+		else:
+			tile_before = [square[0], square[1]-1]
+			tile_after = [square[0], square[1]+len(word)]
 
 		if (self.is_valid_square(tile_before) and self.get_square(tile_before) != " "):
 			return -1, "Please enter full word you are creating"
@@ -197,7 +197,7 @@ class Board:
 		containsCenter = False
 
 		for i in range(len(word)):
-			if not self.is_valid_square(square):
+			if not self.is_valid_square(current_square):
 				return -1, "Out of board bounds"
 			if self.get_square(current_square) == " ":
 				if current_square[0] == 7 and current_square[1] == 7:
@@ -207,7 +207,7 @@ class Board:
 					rack.remove(word[i])
 				except:
 					return -1, "Letter used that is not in rack"
-				modifier = modifiers[square[0]][square[1]]
+				modifier = modifiers[current_square[0]][current_square[1]]
 				square_multiplier = 1
 				if modifier != "  ":
 					square_multiplier = 2 if modifier[0] == "D" else 3
@@ -259,6 +259,7 @@ class Board:
 				return -1, "Word must contain or border an existing word"
 		if not atLeastOne:
 			return -1, "Word must contain at least 1 new tile"
+
 		return score*word_multiplier, "Valid move"
 
 	def get_branch_word_score(self, square, direction, letter):
