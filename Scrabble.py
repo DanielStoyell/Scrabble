@@ -103,8 +103,8 @@ class Game:
 		else:
 			self.message = "It was a tie! " + str(player.score) + " to " + str(opponent.score)
 
+types = [False, False]
 if len(sys.argv[1:]) == 2:
-	types = [False, False]
 	for i in [0,1]:
 		if sys.argv[i+1].lower() == "ai":
 			types[i] = True
