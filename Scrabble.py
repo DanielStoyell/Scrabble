@@ -2,7 +2,9 @@ import graphics
 import random
 import components
 import AI
-import sys
+import sys 
+
+current = open("currentgamedata.txt", "w+")
 
 class Game:
 	''' Initializer for game of scrabble
@@ -52,7 +54,15 @@ class Game:
 				score, letters_used = self.board.play_move(word, square[:], direction, player.get_tiles())
 				player.score += score
 				self.turn += 1
-
+				#Writing Data to File
+				current = open("currentgamedata.txt", "a+")
+				print(player.get_name())
+				line = "Player: " + str(player.get_name()) + " Move: Play Turn: " + str(self.turn-1) + " Word: " + word + \
+				       " Length of Word: " + str(len(word)) + " Rack: " + str(player.rack) + \
+					   " Letters Used: " + str(letters_used) + " Direction: " + direction + " Start Square: " + str(square[:]) + \
+				       " Score: " + str(player.score) + "\n"
+				current.write(line)
+				current.close()
 				#Logic for Rack Update
 				for letter in letters_used:
 					player.rack.remove(letter)
@@ -70,16 +80,36 @@ class Game:
 				score, letters_used = self.board.play_move(ai_move["word"], ai_move["square"], ai_move["direction"], player.get_tiles())
 				if score > -1:
 					player.score += score
-
+					print(letters_used)
+					#Writing Data to File
+					current = open("currentgamedata.txt", "a+")
+					print(player.get_name())
+					line = "Player: " + str(player.get_name()) + " Move: Play" + " Turn: " + str(self.turn) + " Word: " + ai_move["word"] + \
+					       " Length of Word: " + str(len(ai_move["word"])) + " Rack: " + str(player.rack) + \
+					       " Letters Used: " + str(letters_used) + " Direction: " + ai_move["direction"] + " Start Square: " + str(ai_move["square"]) + \
+				           " Score: " + str(player.score) + "\n"
+					current.write(line)
+					current.close()
+					#Pick new tiles
 					for letter in letters_used:
 						player.rack.remove(letter)
 					player.rack = player.rack + self.bag.draw_tiles(7 - len(player.rack))
 				else:
 					print("The ai fucked up")
 			else:
-				print("Ai chose to skip")
+				#Writing Data to File
+				current = open("currentgamedata.txt", "a+")
+				line = "Player: " + str(player.get_name()) + " Move: Skip" + " Turn: " + str(self.turn) + " Word: ???" + \
+					       " Length of Word: ???"  + " Rack: " + str(player.rack) + \
+					       " Letters Used: ???"  + " Direction: ???"  + " Start Square: ???"  + \
+				           " Score: " + str(player.score)
+				current.write(line)
+				current.close()
+				
+				print("AI chose to skip")
 
 			self.turn += 1
+		
 		if opponent.is_ai():
 			self.state = "ai_turn"
 			self.screen.update(self)
@@ -99,12 +129,40 @@ class Game:
 		self.state = "end_game"
 		if player.score > opponent.score:
 			self.message = player.get_name() + " won the game! " + str(player.score) + " to " + str(opponent.score)
+			#Writing Data to File
+			with open("totalgamedata.txt", "a+") as out_file:
+				with open("currentgamedata.text", "r") as in_file:
+					for line in in_file:
+						if str(player.get_name()) in line:
+							out_file.write(line.rstrip('\n') + " Win: 1 " + "\n")
+						else:
+							out_file.write(line.rstrip('\n') + " Win: -1 " + "\n")
 		elif player.score < opponent.score:
+			#Message Update
 			self.message = opponent.get_name() + " won the game! " + str(opponent.score) + " to " + str(player.score)
+			#Writing Data to File
+			with open("totalgamedata.txt", "a+") as out_file:
+				with open("currentgamedata.txt", "r") as in_file:
+					for line in in_file:
+						if str(opponent.get_name()) in line:
+							out_file.write(line.rstrip('\n') + " Win: 1 " + "\n")
+						else:
+							out_file.write(line.rstrip('\n') + " Win: -1 " + "\n")
 		else:
+			#Message Update
 			self.message = "It was a tie! " + str(player.score) + " to " + str(opponent.score)
+			#Writing Data to File
+			with open("totalgamedata.txt", "a+") as out_file:
+				with open("currentgamedata.text", "r") as in_file:
+					for line in in_file:
+						if str(player.get_name()) in line:
+							out_file.write(line.rstrip('\n') + " Win: -1 " + "\n")
+						else:
+							out_file.write(line.rstrip('\n') + " Win: -1 " + "\n")
+			
 
-types = [False, False]
+
+types = [False, True]
 if len(sys.argv[1:]) == 2:
 	for i in [0,1]:
 		if sys.argv[i+1].lower() == "ai":
