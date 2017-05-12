@@ -98,6 +98,10 @@ class Screen:
 		self.restartButton = Button(master=self.root, text = "Restart", width = 15, height = 2, command = lambda: self.restart_game(Game))
 		self.restartButton.grid(row=6, column=0, sticky = W)
 
+		#AI Thinking Label
+		self.AIMessage = Label(master = self.root, text = "AI is thinking ...", height = 2, width = 18)
+		self.AIMessage.grid(row=2, column = 0, sticky = W + E)
+
 		#render initial board
 		self.update(Game)
 
@@ -114,6 +118,15 @@ class Screen:
 
 	def skip_move(self,Game):
 		print("Skipping move")
+		opponent = Game.get_next_turn_player()
+		if opponent.is_ai():
+			self.update(Game)
+			Game.run_turn("ai_turn")
+		else:
+			self.state = "human_turn"
+			self.update(Game)
+			#pass back to ui for human turn
+			pass
 		Game.turn += 1
 		self.update(Game)
 
@@ -141,6 +154,7 @@ class Screen:
 
 	# Re-renders board
 	def update(self, Game):
+		print(Game.state)
 		for i in range(15):
 			for j in range(15):
 				square_tile = Game.board.get_square([i,j])
@@ -167,8 +181,26 @@ class Screen:
 		self.turnlabel["text"] = "Turn: " + str(Game.turn)
 
 		self.entryTextbox.delete(0, 'end')
-
-		if Game.state == "ai_turn":
+		
+		if Game.state == "human_turn":
+			self.errorButton.grid_remove()
+			self.errorMessage.grid_remove()
+			self.quitButton.grid_remove()
+			self.quitMessage.grid_remove()
+			self.restartButton.grid_remove()
+			self.AIMessage.grid_remove()
+			#Add back human prompts
+			self.start_tile_text.grid()
+			self.rack.grid()
+			self.enter.grid()
+			self.entrylabel.grid()
+			self.entryTextbox.grid()
+			self.alignmentLabel.grid()
+			self.alignmentToggle.grid()
+			self.skipButton.grid()
+			self.endButton.grid()
+		#Create AI waiting screen?
+		elif Game.state == "ai_turn":
 			#Remove human move prompts
 			self.start_tile_text.grid_remove()
 			self.rack.grid_remove()
@@ -184,23 +216,8 @@ class Screen:
 			self.quitMessage.grid_remove()
 			self.restartButton.grid_remove()
 			self.endButton.grid_remove()
-		elif Game.state == "human_turn":
-			self.errorButton.grid_remove()
-			self.errorMessage.grid_remove()
-			self.quitButton.grid_remove()
-			self.quitMessage.grid_remove()
-			self.restartButton.grid_remove()
-			#Add back human prompts
-			self.start_tile_text.grid()
-			self.rack.grid()
-			self.enter.grid()
-			self.entrylabel.grid()
-			self.entryTextbox.grid()
-			self.alignmentLabel.grid()
-			self.alignmentToggle.grid()
-			self.skipButton.grid()
-			self.endButton.grid()
-			#Create AI waiting screen?
+			#Add AI is thinking label
+			self.AIMessage.grid()
 		elif Game.state == "ERROR":
 			self.start_tile_text.grid_remove()
 			self.rack.grid_remove()
@@ -212,6 +229,7 @@ class Screen:
 			self.skipButton.grid_remove()
 			self.endButton.grid_remove()
 			self.restartButton.grid_remove()
+			self.AIMessage.grid_remove()
 			#Add AI crap
 			self.errorMessage["text"] = Game.message
 			self.errorButton.grid()
@@ -226,11 +244,13 @@ class Screen:
 			self.alignmentToggle.grid_remove()
 			self.skipButton.grid_remove()
 			self.endButton.grid_remove()
+			self.AIMessage.grid_remove()
 			#Add AI crap
 			self.quitMessage["text"] = Game.message
 			self.quitButton.grid()
 			self.quitMessage.grid()
 			self.restartButton.grid()
+
 
 		self.root.update_idletasks()
 		self.root.update()
