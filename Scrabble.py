@@ -81,6 +81,7 @@ class Game:
 
 			self.turn += 1
 		if opponent.is_ai():
+			self.state = "ai_turn"
 			self.screen.update(self)
 			self.run_turn("ai_turn")
 		else:

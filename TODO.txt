@@ -1,25 +1,22 @@
 TODO:
 
 Misc:
-	1. Human input screen not going away when ai is thinking
+	1. Running ai vs ai
+	2. The ai giving up / ai endgame logic
+	3. Run AI vs AI many times
+	4. Generate a shitton of moves
+	5. Convert moves to vector
+	6. Create classifier
+
 
 AI stuff:
 	1. Fix bugs
 		i. It's not finding certain moves, idk why
+		ii. Multipliers for branch words
 	2. Heavily optimize brute force move scraping
 		i. Cache/check for redundancy as much as possible
 		ii. Better data structures
-
-Data generator:
-	1. File output that, for each move, stores all data about the move and the eventual outcome for the player of the move
-		1. Word (feature extraction? Length, contained_letters, etc)
-		2. Initial square of move
-		3. Score of the move
-		4. Direction
-		5. Board state (feature extraction? Num_tiles, proximity to triple words?)
-		6. Result of game for player of move (1,-1)
-		7. Special case handling for skip
-		8. Rack
+		iii. Get word in fill_pattern
 
 Start project report:
 	1. Section on scrabble game design

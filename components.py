@@ -172,7 +172,8 @@ class Board:
 		else:
 			direction = False
 		current_square = square[:]
-		score = 0
+		main_word_score = 0
+		total_branch_score = 0
 		word_multiplier = 1
 		rack = rack[:] #might convert to alt form eventually
 
@@ -213,11 +214,11 @@ class Board:
 					square_multiplier = 2 if modifier[0] == "D" else 3
 					if modifier[1] == "W":
 						word_multiplier *= square_multiplier
-						score += letter_values[word[i]]
+						main_word_score += letter_values[word[i]]
 					else:
-						score += letter_values[word[i]]*square_multiplier
+						main_word_score += letter_values[word[i]]*square_multiplier
 				else:
-					score += letter_values[word[i]]
+					main_word_score += letter_values[word[i]]
 				#CHECK FOR BRANCHING WORDS
 				if direction:
 					border_right = [current_square[0], current_square[1]+1]
@@ -228,7 +229,7 @@ class Board:
 						if branch_score == -1:
 							return -1, branch_word + " is not a valid word"
 						else:
-							score += branch_score
+							total_branch_score += branch_score
 				else:
 					border_bottom = [current_square[0]+1, current_square[1]]
 					border_top = [current_square[0]-1, current_square[1]]
@@ -238,11 +239,11 @@ class Board:
 						if branch_score == -1:
 							return -1, branch_word + " is not a valid word"
 						else:
-							score += branch_score
+							total_branch_score += branch_score
 			else:
 				contains = True
 				if self.get_square(current_square) == word[i]:
-					score += letter_values[word[i]]
+					main_word_score += letter_values[word[i]]
 				else:
 					return -1, "Letter exists on move space that is not aligned with word"
 
@@ -266,7 +267,7 @@ class Board:
 		else:
 			bingo = 0
 
-		return score*word_multiplier + bingo, "Valid move"
+		return main_word_score*word_multiplier + total_branch_score + bingo, "Valid move"
 
 	def get_branch_word_score(self, square, direction, letter):
 		#Only guarantee about passed in square is that the word contains it
