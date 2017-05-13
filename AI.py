@@ -1,6 +1,15 @@
 import components
 from itertools import permutations
 import time
+import learning
+import csv
+import random
+
+
+RAND = 0
+BEST_SCORE = 1
+BAYES = 2
+MOVE_CHOICE = BEST_SCORE
 
 """
 Example move:
@@ -13,6 +22,26 @@ move = {
 }
 
 """
+
+### learning Construction ###
+print("Reading in and constructing training data")
+xTr = []
+yTr = []
+dataFile = open("totalgamedata.txt", "r")
+reader = csv.DictReader(dataFile, delimiter=";")
+for row in reader:
+	v = learning.feature_extract(row)
+	xTr.append(v)
+	yTr.append(int(row["Win"]))
+
+#Trains and returns classifier function
+#classifier function returns distances from linear separator
+#To get classification, take np.sign(preds[i]), where preds is a return value
+print("Training classifier")
+classifier = learning.naivebayesCL(xTr,yTr)
+print("classifier training complete")
+
+#### END classifier CONSTRUCTION #####
 
 def get_playable_squares(board):
 	playable_squares = []
@@ -146,22 +175,33 @@ def fill_pattern(perm, pattern, base, pos):
 
 	return ''.join(pattern), start_pos
 
-def choose_move(moves, board, player):
+def choose_move(moves, board, player, turn):
 	#Given a list of moves, finds the "best" and returns it. Best is defined through ai crap
 	#IMPLEMENT GIVING UP
 	if (len(moves)) > 0:
-		bestScore = 0
-		for move in moves:
-			#print(str_move(move))
-			if move["score"] > bestScore:
-				bestScore = move["score"]
-				bestMove = move
-		return bestMove
+		if MOVE_CHOICE == RAND:
+			return moves[random.randint(0, len(moves)-1)]
+		elif MOVE_CHOICE == BEST_SCORE:
+			bestScore = 0
+			for move in moves:
+				#print(str_move(move))
+				if move["score"] > bestScore:
+					bestScore = move["score"]
+					bestMove = move
+			return bestMove
+		elif MOVE_CHOICE == BAYES:
+			xTest = learning.construct_test(moves, board, player, turn)
+			preds = classifier(xTest)
+			for i in range(len(moves)):
+				print(str_move(moves[i]) + "   " + str(preds[i]))
+			return moves[learning.getBest(preds)]
+		else:
+			return moves[0]
 	else:	
 
 		return {"type":"skip"}
 
-def get_AI_move(board, player):
+def get_AI_move(board, player, turn):
 	#print("################################")
 	#print(player.rack)
 	if board.isEmpty:
@@ -177,7 +217,7 @@ def get_AI_move(board, player):
 		# with open('moveScrape1.csv', 'a') as f:
 		# 	f.write(str(len(playable_squares)) + "," + str(elapsed) + "\n")
 
-	move = choose_move(moves, board, player)
+	move = choose_move(moves, board, player, turn)
 	#print("PLAYING | " + str_move(move))
 	return move 
 

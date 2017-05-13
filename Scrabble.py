@@ -57,10 +57,10 @@ class Game:
 				#Writing Data to File
 				current = open("currentgamedata.txt", "a+")
 				print(player.get_name())
-				line = "Player: " + str(player.get_name()) + " Move: Play Turn: " + str(self.turn-1) + " Word: " + word + \
-				       " Length of Word: " + str(len(word)) + " Rack: " + str(player.rack) + \
-					   " Letters Used: " + str(letters_used) + " Direction: " + direction + " Start Square: " + str(square[:]) + \
-				       " Score: " + str(player.score) + "\n"
+				line = str(player.get_name()) + ";" + str(self.turn) + ";" + word + \
+					       ";" + str(len(word)) + ";" + ''.join(player.rack) + \
+					       ";" + ''.join(letters_used) + ";" + direction + ";" + str(square) + \
+				           ";" + str(player.score) + "\n"
 				current.write(line)
 				current.close()
 				#Logic for Rack Update
@@ -75,7 +75,7 @@ class Game:
 				return
 		elif state == "ai_turn":
 			print("AI choosing move")
-			ai_move = AI.get_AI_move(self.board, player)
+			ai_move = AI.get_AI_move(self.board, player, self.turn)
 			if ai_move["type"] == "word":
 				score, letters_used = self.board.play_move(ai_move["word"], ai_move["square"], ai_move["direction"], player.get_tiles())
 				if score > -1:
@@ -84,10 +84,10 @@ class Game:
 					#Writing Data to File
 					current = open("currentgamedata.txt", "a+")
 					print(player.get_name())
-					line = "Player: " + str(player.get_name()) + " Move: Play" + " Turn: " + str(self.turn) + " Word: " + ai_move["word"] + \
-					       " Length of Word: " + str(len(ai_move["word"])) + " Rack: " + str(player.rack) + \
-					       " Letters Used: " + str(letters_used) + " Direction: " + ai_move["direction"] + " Start Square: " + str(ai_move["square"]) + \
-				           " Score: " + str(player.score) + "\n"
+					line = str(player.get_name()) + ";" + str(self.turn) + ";" + ai_move["word"] + \
+					       ";" + str(len(ai_move["word"])) + ";" + ''.join(player.rack) + \
+					       ";" + ''.join(letters_used) + ";" + ai_move["direction"] + ";" + str(ai_move["square"]) + \
+				           ";" + str(player.score) + "\n"
 					current.write(line)
 					current.close()
 					#Pick new tiles
@@ -97,13 +97,6 @@ class Game:
 				else:
 					print("The ai fucked up")
 			else:
-				#Writing Data to File
-				current = open("currentgamedata.txt", "a+")
-				line = "Player: " + str(player.get_name()) + " Move: Skip" + " Turn: " + str(self.turn) + " Word: ???" + \
-					       " Length of Word: ???"  + " Rack: " + str(player.rack) + \
-					       " Letters Used: ???"  + " Direction: ???"  + " Start Square: ???"  + \
-				           " Score: " + str(player.score)
-				current.write(line)
 				current.close()
 				
 				print("AI chose to skip")
@@ -134,9 +127,9 @@ class Game:
 				with open("currentgamedata.text", "r") as in_file:
 					for line in in_file:
 						if str(player.get_name()) in line:
-							out_file.write(line.rstrip('\n') + " Win: 1 " + "\n")
+							out_file.write(line.rstrip('\n') + ";1 " + "\n")
 						else:
-							out_file.write(line.rstrip('\n') + " Win: -1 " + "\n")
+							out_file.write(line.rstrip('\n') + ";-1 " + "\n")
 		elif player.score < opponent.score:
 			#Message Update
 			self.message = opponent.get_name() + " won the game! " + str(opponent.score) + " to " + str(player.score)
@@ -145,9 +138,9 @@ class Game:
 				with open("currentgamedata.txt", "r") as in_file:
 					for line in in_file:
 						if str(opponent.get_name()) in line:
-							out_file.write(line.rstrip('\n') + " Win: 1 " + "\n")
+							out_file.write(line.rstrip('\n') + ";1 " + "\n")
 						else:
-							out_file.write(line.rstrip('\n') + " Win: -1 " + "\n")
+							out_file.write(line.rstrip('\n') + ";-1 " + "\n")
 		else:
 			#Message Update
 			self.message = "It was a tie! " + str(player.score) + " to " + str(opponent.score)
@@ -156,9 +149,9 @@ class Game:
 				with open("currentgamedata.text", "r") as in_file:
 					for line in in_file:
 						if str(player.get_name()) in line:
-							out_file.write(line.rstrip('\n') + " Win: -1 " + "\n")
+							out_file.write(line.rstrip('\n') + ";-1 " + "\n")
 						else:
-							out_file.write(line.rstrip('\n') + " Win: -1 " + "\n")
+							out_file.write(line.rstrip('\n') + ";-1 " + "\n")
 			
 
 
