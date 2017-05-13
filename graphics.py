@@ -115,9 +115,9 @@ class Screen:
 		self.root.update()
 		#self.root.mainloop()
 
-	def update_progress(self, progress, max):
+	def update_progress(self, progress, maximum):
 		self.progress["value"] = progress
-		self.progress["maximum"] = max
+		self.progress["maximum"] = maximum
 
 		self.root.update_idletasks()
 		self.root.update()
