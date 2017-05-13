@@ -207,6 +207,7 @@ class Screen:
 			self.quitMessage.grid_remove()
 			self.restartButton.grid_remove()
 			self.AIMessage.grid_remove()
+			self.progress.grid_remove()
 			#Add back human prompts
 			self.start_tile_text.grid()
 			self.rack.grid()
@@ -236,6 +237,7 @@ class Screen:
 			self.endButton.grid_remove()
 			#Add AI is thinking label
 			self.AIMessage.grid()
+			self.progress.grid()
 		elif Game.state == "ERROR":
 			self.start_tile_text.grid_remove()
 			self.rack.grid_remove()
@@ -248,6 +250,7 @@ class Screen:
 			self.endButton.grid_remove()
 			self.restartButton.grid_remove()
 			self.AIMessage.grid_remove()
+			self.progress.grid_remove()
 			#Add AI crap
 			self.errorMessage["text"] = Game.message
 			self.errorButton.grid()
@@ -263,6 +266,7 @@ class Screen:
 			self.skipButton.grid_remove()
 			self.endButton.grid_remove()
 			self.AIMessage.grid_remove()
+			self.progress.grid_remove()
 			#Add AI crap
 			self.quitMessage["text"] = Game.message
 			self.quitButton.grid()
