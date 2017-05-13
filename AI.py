@@ -9,7 +9,7 @@ import random
 RAND = 0
 BEST_SCORE = 1
 BAYES = 2
-MOVE_CHOICE = BEST_SCORE
+MOVE_CHOICE = RAND
 
 """
 Example move:
@@ -55,7 +55,8 @@ def get_playable_squares(board):
 def find_moves(square, board, player):
 	#print("Finding moves for " + str(square))
 	moves = []
-	cache = set()
+	basePatternCache = set()
+	filledPatternCache = set()
 	#Iterate through each side of the tile
 	for side in [[1,0],[-1,0,],[0,1],[0,-1]]:
 		side_square = [square[0] + side[0], square[1] + side[1]]
@@ -71,10 +72,10 @@ def find_moves(square, board, player):
 			#Construct pattern and pass into anagram_checker
 			pattern = get_line(side_square, side, board)
 			base = side_square[0]
-			if pattern+str(base) not in cache:
+			if pattern+str(base) not in basePatternCache:
 				#print("Containing moves")
-				moves += anagram_checker(pattern, base, player.get_tiles(), containDirection, side_square, board)
-				cache.add(pattern+str(base))
+				moves += anagram_checker(pattern, base, player.get_tiles(), containDirection, side_square, board, filledPatternCache)
+				basePatternCache.add(pattern+str(base))
 			else:
 				pass
 				#print("Found cached base and pattern, skipping")
@@ -82,10 +83,10 @@ def find_moves(square, board, player):
 			#Construct pattern and pass into anagram_checker
 			pattern = get_line(side_square, side[::-1], board)
 			base = side_square[1]
-			if pattern+str(base) not in cache:
+			if pattern+str(base) not in basePatternCache:
 				#print("Bordering moves")
-				moves += anagram_checker(pattern, base, player.get_tiles(), borderDirection, side_square, board)
-				cache.add(pattern+str(base))
+				moves += anagram_checker(pattern, base, player.get_tiles(), borderDirection, side_square, board, filledPatternCache)
+				basePatternCache.add(pattern+str(base))
 			else:
 				pass
 				#print("Found cached base and pattern, skipping")
@@ -105,7 +106,7 @@ def get_line(square, side, board):
 	return pattern
 
 
-def anagram_checker(pattern, base, rack, direction, square, board):
+def anagram_checker(pattern, base, rack, direction, square, board, fillPatternCache):
 	# 'pattern' is of the form "     i  e      ", is a full row or column of the board
 	# 'base' is an index into pattern. Generated words must contain base
 	# Checks all possible moves that comply with pattern, and runs is_valid_move
@@ -119,7 +120,8 @@ def anagram_checker(pattern, base, rack, direction, square, board):
 				new_pattern, start_pos = fill_pattern(perm, pattern, base, pos)
 				#print("Checking '" + ''.join(new_pattern) + "'")
 				#OPTIMIZE BY DOING IN FILL_PATTERN
-				if start_pos > -1: #If not anagram extended beyond the page and is invalid
+				if start_pos > -1 and (new_pattern+str(start_pos) not in fillPatternCache): #If not anagram extended beyond the page and is invalid
+					fillPatternCache.add(new_pattern+str(start_pos))
 					word = ""
 					i = start_pos
 					while i < len(pattern) and new_pattern[i] != " ":
@@ -192,8 +194,6 @@ def choose_move(moves, board, player, turn):
 		elif MOVE_CHOICE == BAYES:
 			xTest = learning.construct_test(moves, board, player, turn)
 			preds = classifier(xTest)
-			for i in range(len(moves)):
-				print(str_move(moves[i]) + "   " + str(preds[i]))
 			return moves[learning.getBest(preds)]
 		else:
 			return moves[0]
@@ -201,24 +201,26 @@ def choose_move(moves, board, player, turn):
 
 		return {"type":"skip"}
 
-def get_AI_move(board, player, turn):
+def get_AI_move(board, player, turn, screen):
 	#print("################################")
 	#print(player.rack)
 	if board.isEmpty:
-		moves = anagram_checker(" "*15, 7, player.rack, "Horizontal", [7,7], board)
+		moves = anagram_checker(" "*15, 7, player.rack, "Horizontal", [7,7], board, set())
 	else:
 		playable_squares = get_playable_squares(board)
 		start = time.clock()
 		moves = []
-		for square in playable_squares:
-			moves += find_moves(square, board, player)
+		for i in range(len(playable_squares)):
+			screen.update_progress(i, len(playable_squares))
+			moves += find_moves(playable_squares[i], board, player)
 		# REENABLE FOR DATA COLLECTION WHEN THE SCRAPING IS FIXED
 		# elapsed = time.clock() - start
 		# with open('moveScrape1.csv', 'a') as f:
 		# 	f.write(str(len(playable_squares)) + "," + str(elapsed) + "\n")
 
 	move = choose_move(moves, board, player, turn)
-	#print("PLAYING | " + str_move(move))
+	print("Rack: " + str(player.rack))
+	print(player.name + " PLAYING | " + str_move(move))
 	return move 
 
 def str_move(move):

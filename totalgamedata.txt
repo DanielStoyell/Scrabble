@@ -1,5 +1,38 @@
 Player;Turn;Word;Length;Rack;Letters_Used;Direction;Start;Score;Win
-PLAYER_1;2;SAP;3;['A', 'S', 'U', 'A', 'R', 'P', 'S'];['S', 'A', 'P'];Horizontal;[7, 7];10;-1 
-PLAYER_2;2;JAUKS;5;['L', 'U', 'D', 'J', 'L', 'K', 'S'];['J', 'U', 'K', 'S'];Vertical;[11, 8];25;1 
-PLAYER_1;4;KI;2;['U', 'A', 'R', 'S', 'B', 'O', 'I'];['I'];Horizontal;[9, 8];18;-1 
-PLAYER_2;4;DERM;4;['L', 'D', 'L', 'M', 'R', 'N', 'E'];['D', 'E', 'R', 'M'];Vertical;[13, 10];47;1 
+PLAYER_1;1;OY;2;YFOJDEI;OY;Horizontal;[7, 9];10;-1 
+PLAYER_2;2;ROM;3;QOMORPK;ROM;Horizontal;[8, 10];14;1 
+PLAYER_1;3;EH;2;FJDEIHA;EH;Horizontal;[9, 11];23;-1 
+PLAYER_2;4;LOPS;4;QOPKLYS;LOPS;Horizontal;[10, 13];41;1 
+PLAYER_1;5;ID;2;FJDIAEL;ID;Horizontal;[11, 14];28;-1 
+PLAYER_2;6;WORE;4;QKYOUEW;WE;Vertical;[10, 7];48;1 
+PLAYER_1;7;OLE;3;FJAELOB;OLE;Vertical;[12, 6];33;-1 
+PLAYER_2;8;AUK;3;QKYOUSA;AUK;Vertical;[14, 5];67;1 
+PLAYER_1;9;FIX;3;FJABXRI;FIX;Vertical;[13, 8];64;-1 
+PLAYER_2;10;TOR;3;QYOSETR;TOR;Vertical;[10, 5];77;1 
+PLAYER_1;11;AB;2;JABRMII;AB;Vertical;[15, 6];74;-1 
+PLAYER_2;12;SIS;3;QYSEIZS;SIS;Vertical;[9, 4];84;1 
+PLAYER_1;13;REI;3;JRMIIOE;REI;Horizontal;[12, 15];89;-1 
+PLAYER_2;14;EN;2;QYEZAEN;EN;Horizontal;[13, 15];98;1 
+PLAYER_1;15;ON;2;JMIOVGN;ON;Vertical;[12, 4];96;-1 
+PLAYER_2;16;AID;3;QYZAERO;A;Horizontal;[11, 14];114;1 
+PLAYER_1;17;ID;2;JMIVGDI;ID;Vertical;[11, 3];102;-1 
+PLAYER_2;18;ZERO;4;QYZEROI;ZERO;Vertical;[10, 2];140;1 
+PLAYER_1;19;ME;2;JMVGIEA;ME;Vertical;[9, 1];112;-1 
+PLAYER_2;20;HIN;3;QYINRHW;HIN;Vertical;[11, 0];152;1 
+PLAYER_1;21;UT;2;JVGIAUT;UT;Vertical;[12, 1];116;-1 
+PLAYER_2;22;SUQ;3;QYRWEUS;SUQ;Horizontal;[12, 4];179;1 
+PLAYER_1;23;PIA;3;JVGIARP;PIA;Horizontal;[5, 7];129;-1 
+PLAYER_2;24;TAE;3;YRWEUAT;TAE;Horizontal;[4, 9];184;1 
+PLAYER_1;25;OR;2;JVGRIVO;OR;Horizontal;[3, 10];133;-1 
+PLAYER_2;26;AURA;4;YRWUACA;ARA;Vertical;[15, 2];190;1 
+PLAYER_1;27;VOE;3;JVGIVLE;V;Vertical;[5, 8];143;-1 
+PLAYER_2;28;TORY;4;YWUCTDD;TY;Horizontal;[3, 11];201;1 
+PLAYER_1;29;EYE;3;JGIVLEE;EE;Vertical;[5, 10];155;-1 
+PLAYER_2;30;FUD;3;WUCDDAF;FUD;Vertical;[7, 11];213;1 
+PLAYER_1;31;NUB;3;JGIVLNB;NB;Horizontal;[5, 13];167;-1 
+PLAYER_2;32;DAG;3;WCDAGTN;AG;Horizontal;[6, 14];224;1 
+PLAYER_1;33;LEV;3;JGIVLLE;LE;Horizontal;[2, 9];177;-1 
+PLAYER_2;34;TAD;3;WCDTNNA;TAD;Horizontal;[13, 11];244;1 
+PLAYER_1;35;LEG;3;JGIVLEC;LEG;Horizontal;[1, 8];190;-1 
+PLAYER_2;36;ID;2;WCNNTIG;I;Vertical;[14, 10];247;1 
+PLAYER_1;37;CEL;3;JIVC;C;Vertical;[3, 6];195;-1 

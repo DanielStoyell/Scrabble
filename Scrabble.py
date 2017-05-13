@@ -3,6 +3,7 @@ import random
 import components
 import AI
 import sys 
+import time
 
 current = open("currentgamedata.txt", "w+")
 
@@ -42,6 +43,7 @@ class Game:
 			return self.players[0]
 
 	def run_turn(self, state, word=None, direction=None, square=None):
+		print("Tiles remaining in bag: " + str(self.bag.get_len_bag()))
 		player = self.get_current_turn_player()
 		opponent = self.get_next_turn_player()
 		if state == "human_turn":
@@ -52,7 +54,6 @@ class Game:
 				self.turn += 1
 				#Writing Data to File
 				current = open("currentgamedata.txt", "a+")
-				print(player.get_name())
 				line = str(player.get_name()) + ";" + str(self.turn) + ";" + word + \
 					       ";" + str(len(word)) + ";" + ''.join(player.rack) + \
 					       ";" + ''.join(letters_used) + ";" + direction + ";" + str(square) + \
@@ -70,16 +71,13 @@ class Game:
 				self.message = message
 				return
 		elif state == "ai_turn":
-			print("AI choosing move")
-			ai_move = AI.get_AI_move(self.board, player, self.turn)
+			ai_move = AI.get_AI_move(self.board, player, self.turn, self.screen)
 			if ai_move["type"] == "word":
 				score, letters_used = self.board.play_move(ai_move["word"], ai_move["square"], ai_move["direction"], player.get_tiles())
 				if score > -1:
 					player.score += score
-					print(letters_used)
 					#Writing Data to File
 					current = open("currentgamedata.txt", "a+")
-					print(player.get_name())
 					line = str(player.get_name()) + ";" + str(self.turn) + ";" + ai_move["word"] + \
 					       ";" + str(len(ai_move["word"])) + ";" + ''.join(player.rack) + \
 					       ";" + ''.join(letters_used) + ";" + ai_move["direction"] + ";" + str(ai_move["square"]) + \
@@ -136,7 +134,7 @@ class Game:
 			self.message = player.get_name() + " won the game! " + str(player.score) + " to " + str(opponent.score)
 			#Writing Data to File
 			with open("totalgamedata.txt", "a+") as out_file:
-				with open("currentgamedata.text", "r") as in_file:
+				with open("currentgamedata.txt", "r") as in_file:
 					for line in in_file:
 						if str(player.get_name()) in line:
 							out_file.write(line.rstrip('\n') + ";1 " + "\n")
@@ -167,7 +165,7 @@ class Game:
 		self.screen.update(self)
 			
 
-
+start_time = time.clock()
 types = [True, True]
 if len(sys.argv[1:]) == 2:
 	for i in [0,1]:
@@ -188,6 +186,9 @@ print("Starting game....")
 main = Game(player1, player2)
 
 print("Game ending....")
+
+elapsed = time.clock() - start_time
+print("Elapsed time: " + str(elapsed))
 
 
 

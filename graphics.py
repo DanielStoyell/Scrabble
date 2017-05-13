@@ -2,6 +2,7 @@ import random
 import components
 from tkinter import font
 from tkinter import *
+from tkinter import ttk
 
 class Screen:
 	def __init__(self, Game):
@@ -102,6 +103,10 @@ class Screen:
 		self.AIMessage = Label(master = self.root, text = "AI is thinking ...", height = 2, width = 18)
 		self.AIMessage.grid(row=2, column = 0, sticky = W + E)
 
+		#Add AI progress bar
+		self.progress = ttk.Progressbar(master=self.root, orient="horizontal", length=50, mode="determinate")
+		self.progress.grid(row=3, column=0, sticky = W + E)
+
 		#render initial board
 		self.update(Game)
 
@@ -109,6 +114,13 @@ class Screen:
 		self.root.update_idletasks()
 		self.root.update()
 		#self.root.mainloop()
+
+	def update_progress(self, progress, max):
+		self.progress["value"] = progress
+		self.progress["maximum"] = max
+
+		self.root.update_idletasks()
+		self.root.update()
 
 	# Someone clicked the enter button. Should quickly pass along available data to main Scrabble.py functions for processing
 	def enter_move(self, Game):
