@@ -14,6 +14,7 @@ class Game:
 		2. Init board
 	'''
 	def __init__(self, player0info, player1info):
+		self.start_time = time.clock()
 		self.bag = components.Bag()
 		self.board = components.Board()
 		self.turn = 1
@@ -124,6 +125,8 @@ class Game:
 				pass
 
 	def end_game(self):
+		elapsed = time.clock() - self.start_time
+		print("Time elapsed for game: " + str(elapsed))
 		player = self.get_current_turn_player()
 		opponent = self.get_next_turn_player()
 		opponent.score += player.get_rack_score()
@@ -165,7 +168,6 @@ class Game:
 		self.screen.update(self)
 			
 
-start_time = time.clock()
 types = [True, True]
 if len(sys.argv[1:]) == 2:
 	for i in [0,1]:
@@ -186,9 +188,6 @@ print("Starting game....")
 main = Game(player1, player2)
 
 print("Game ending....")
-
-elapsed = time.clock() - start_time
-print("Elapsed time: " + str(elapsed))
 
 
 
