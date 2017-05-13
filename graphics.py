@@ -1,199 +1,262 @@
-import graphics
 import random
 import components
-import AI
-import sys 
+from tkinter import font
+from tkinter import *
 
-current = open("currentgamedata.txt", "w+")
+class Screen:
+	def __init__(self, Game):
+		#Startup view
+		self.root = Tk()
 
-class Game:
-	''' Initializer for game of scrabble
-		### TODO ###
-		1. Init players 1 and 2
-		2. Init board
-	'''
-	def __init__(self, player0info, player1info):
-		self.bag = components.Bag()
-		self.board = components.Board()
-		self.turn = 1
-		self.message = ""
-		self.state = "human_turn"
-		self.last_skipped = False 
+		#Create the Title of the Game
+		title = Label(master = self.root, text = "Scrabble!", height = 4, width = 18, bg = "red", fg = "white")
+		title.grid(row = 0, column = 0, sticky = N+W)
+		title.config(font = ("Lucida", 21))
 
-		# Define both players and store in player array (somewhat generalizable to >2 players but for now just 2)
-		player1 = components.Player(player0info[0], self.bag.draw_tiles(7), player0info[1])
-		player2 = components.Player(player1info[0], self.bag.draw_tiles(7), player1info[1])
-		self.players = [player1, player2]
-		self.screen = graphics.Screen(self)
-		if self.get_current_turn_player().is_ai():
-			self.state = "ai_turn"
-			self.run_turn("ai_turn")
-		else:
-			self.state = "human_turn"
-		self.screen.root.mainloop()
+		#Create player data on top
+		self.playerData = Label(master = self.root, text = "Player data", height = 2, width=30, fg="black")
+		self.playerData.grid(row=1, column=0, sticky = W+E)
 
-	def get_current_turn_player(self):
-		return self.players[(self.turn-1) % 2]
+		#Create the Board
+		w1 = Frame(master = self.root, bg = "papaya whip")
+		w1.grid(row = 0, column = 50, rowspan = 200, columnspan= 400, sticky = E)
 
-	def get_next_turn_player(self):
-		if self.get_current_turn_player() == self.players[0]:
-			return self.players[1]
-		else:
-			return self.players[0]
+		#Start Tile Selection Label 
+		#The coordinates are found in the board logic.
+		self.start_tile_text = Label(master = self.root, text = "Start Tile: ", height = 1, width = 16, fg = "black")
+		self.start_tile_text.grid(row = 3, column = 0, sticky = W + E)
 
-	def run_turn(self, state, word=None, direction=None, square=None):
-		player = self.get_current_turn_player()
-		opponent = self.get_next_turn_player()
-		if state == "human_turn":
-			is_valid, message = self.board.is_valid_move(word, square[:], direction, player.get_tiles())
-			if is_valid >= 0:
-				score, letters_used = self.board.play_move(word, square[:], direction, player.get_tiles())
-				player.score += score
-				self.turn += 1
-				#Writing Data to File
-				current = open("currentgamedata.txt", "a+")
-				print(player.get_name())
-				line = "Player: " + str(player.get_name()) + " Move: Play Turn: " + str(self.turn-1) + " Word: " + word + \
-				       " Length of Word: " + str(len(word)) + " Rack: " + str(player.rack) + \
-					   " Letters Used: " + str(letters_used) + " Direction: " + direction + " Start Square: " + str(square[:]) + \
-				       " Score: " + str(player.score) + "\n"
-				current.write(line)
-				current.close()
-				#Logic for Rack Update
-				for letter in letters_used:
-					player.rack.remove(letter)
+		self.buttons = []
+		self.start_tile = []
+
+		for i in range(15):
+			self.buttons.append([])
+			for j in range(15):
+				def handlebuttonpress(i,j):
+					self.start_tile = [i,j]
+					coordinates = '({0},{1})'.format(i,j)
+					self.start_tile_text["text"] = "Start Tile: " + coordinates
 				
-				player.rack = player.rack + self.bag.draw_tiles(7 - len(player.rack))
-			else:
-				print("Invalid move - trying again!")
-				self.state = "ERROR"
-				self.message = message
-				return
-		elif state == "ai_turn":
-			print("AI choosing move")
-			ai_move = AI.get_AI_move(self.board, player)
-			if ai_move["type"] == "word":
-				score, letters_used = self.board.play_move(ai_move["word"], ai_move["square"], ai_move["direction"], player.get_tiles())
-				if score > -1:
-					player.score += score
-					print(letters_used)
-					#Writing Data to File
-					current = open("currentgamedata.txt", "a+")
-					print(player.get_name())
-					line = "Player: " + str(player.get_name()) + " Move: Play" + " Turn: " + str(self.turn) + " Word: " + ai_move["word"] + \
-					       " Length of Word: " + str(len(ai_move["word"])) + " Rack: " + str(player.rack) + \
-					       " Letters Used: " + str(letters_used) + " Direction: " + ai_move["direction"] + " Start Square: " + str(ai_move["square"]) + \
-				           " Score: " + str(player.score) + "\n"
-					current.write(line)
-					current.close()
-					#Pick new tiles
-					for letter in letters_used:
-						player.rack.remove(letter)
-					player.rack = player.rack + self.bag.draw_tiles(7 - len(player.rack))
-				else:
-					print("The ai fucked up")
-			else:
-				print("AI chose to skip")
-				print(self.last_skipped)
-				#Writing Data to File
-				current = open("currentgamedata.txt", "a+")
-				line = "Player: " + str(player.get_name()) + " Move: Skip" + " Turn: " + str(self.turn) + " Word: ???" + \
-					       " Length of Word: ???"  + " Rack: " + str(player.rack) + \
-					       " Letters Used: ???"  + " Direction: ???"  + " Start Square: ???"  + \
-				           " Score: " + str(player.score)
-				current.write(line)
-				current.close()
+				self.buttons[i].append(Button(w1, fg="black", height = 2, width = 4, command = (lambda i = i, j = j: handlebuttonpress(i,j)), bg = "papaya whip"))
+				self.buttons[i][j].grid(row = i, column = j)
 
-				#Skip Logic
-				if self.last_skipped == False:
-					self.last_skipped = True
-				else:
-					self.end_game()
-					self.screen.restart_game(self)
-				
-			self.turn += 1
-		
+		self.rack = Label(master = self.root, text = "rack: " + Game.players[0].get_tile_rep(), height = 2, width = 18, fg = "black")
+		self.rack.grid(row = 2, column = 0, sticky = W+E)
+		self.rack.config (font = ("Lucida", 18))
+
+		#Word Entry Label and Entry
+		self.entrylabel = Label(master = self.root, text = "Your Word: ", height = 1, width = 9, fg = "black" )
+		self.entrylabel.grid(row = 5, column = 0, sticky = W)
+		self.entryTextbox = Entry(master = self.root, width = 30)
+		self.entryTextbox.grid(row = 5, column = 0, sticky = E)
+
+		#Horizontal/Vertical Check Label and Button
+		self.direction = "Horizontal"
+		def directionToggle():
+			if self.direction == "Horizontal":
+				self.direction = "Vertical"
+			else:
+				self.direction = "Horizontal"
+			self.alignmentToggle["text"] = self.direction
+		self.alignmentLabel = Label(master = self.root, text = "Word Alignment: ", height = 1, width = 13, fg = "black" )
+		self.alignmentLabel.grid(row = 6, column = 0, sticky = W)
+		self.alignmentToggle = Button(master=self.root, text="Horizontal", width=20, height=2, command=directionToggle)
+		self.alignmentToggle.grid(row=6,column=0,sticky=E)
+
+		#Turn Label of Game
+		self.turnlabel = Label(master= self.root, text = "Turn: " + str(Game.turn), height = 2, width = 6, fg = "black")
+		self.turnlabel.grid(row = 199, column = 0, sticky = W)
+
+		#Enter Button 
+		self.enter = Button(master = self.root, text = "Enter", height = 2, width = 18, bg = "chartreuse2", fg = "white", command=(lambda: self.enter_move(Game)))
+		self.enter.grid(row = 12, column = 0, sticky = E + W)
+
+		#Skip Button
+		self.skipButton = Button(master = self.root, text = "Skip Turn", height = 2, width = 18, bg = "goldenrod2", fg = "firebrick1", command = (lambda: self.skip_move(Game)))
+		self.skipButton.grid(row = 13, column = 0, sticky = E + W)
+
+		#Error message data
+		self.errorMessage = Label(master = self.root, text = "Invalid move!", height = 2, width=30, fg="black")
+		self.errorMessage.grid(row=2, column=0, sticky = W + E)
+		self.errorMessage.grid_remove()
+
+		self.errorButton = Button(master=self.root, text="OK", width=15, height=2, command=lambda : self.confirm_error(Game))
+		self.errorButton.grid(row=6,column=0,sticky= W + E)
+		self.errorButton.grid_remove()
+
+		#Give Up Button
+		self.endButton = Button(master = self.root, text = "Give Up!", height = 2, width = 18, bg = "orange red", fg = "yellow", command = (lambda: self.end_game_move(Game)))
+		self.endButton.grid(row = 14, column = 0, sticky = E + W)
+
+		self.quitMessage = Label(master = self.root, text = "Result", height = 2, width=30, fg="black")
+		self.quitMessage.grid(row=2, column=0, sticky = W + E)
+		self.quitMessage.grid_remove()
+
+		self.quitButton = Button(master=self.root, text = "Quit", width = 15, height = 2, command = lambda: self.quit_game(Game))
+		self.quitButton.grid(row=6, column=0, sticky = E)
+
+		self.restartButton = Button(master=self.root, text = "Restart", width = 15, height = 2, command = lambda: self.restart_game(Game))
+		self.restartButton.grid(row=6, column=0, sticky = W)
+
+		#AI Thinking Label
+		self.AIMessage = Label(master = self.root, text = "AI is thinking ...", height = 2, width = 18)
+		self.AIMessage.grid(row=2, column = 0, sticky = W + E)
+
+		#render initial board
+		self.update(Game)
+
+		#Runs actual game
+		self.root.update_idletasks()
+		self.root.update()
+		#self.root.mainloop()
+
+	# Someone clicked the enter button. Should quickly pass along available data to main Scrabble.py functions for processing
+	def enter_move(self, Game):
+		print("Entering move")
+		Game.run_turn("human_turn", self.entryTextbox.get().upper(), self.direction, self.start_tile)
+		self.update(Game)
+
+	def skip_move(self,Game):
+		print("Skipping move")
+		opponent = Game.get_next_turn_player()
 		if opponent.is_ai():
-			if len(player.rack) == 0:
-				self.end_game()
-				print("Game End Sequence Initiated - No tiles left in rack")
-				self.screen.restart_game(self)
+			Game.turn += 1
+			Game.last_skipped = True 
+			Game.state = "ai_turn"
+			self.update(Game)
+			Game.run_turn("ai_turn")
+		else:
+			Game.turn += 1
+			if Game.last_skipped == True:
+				Game.state = "end_game"
 			else:
-				self.state = "ai_turn"
-				self.screen.update(self)
-				self.run_turn("ai_turn")
+				Game.state = "human_turn"
+			self.update(Game)
+			Game.last_skipped = True
+			#pass back to ui for human turn
+			pass
+
+	def confirm_error(self, Game):
+		print("confirm error")
+		Game.state = "human_turn"
+		self.update(Game)
+
+	def end_game_move(self,Game):
+		print("giving up")
+		Game.end_game() 
+
+	
+	def quit_game(self, Game):
+		print("closing window")
+		self.root.destroy()
+
+	def restart_game(self, Game):
+		print("restarting game")
+		self.root.destroy()
+		player1 = ["PLAYER_1", True]
+		player2 = ["PLAYER_2", True]
+		main = Game.__init__(player1, player2)
+		self.update(Game)
+
+	# Re-renders board
+	def update(self, Game):
+		print(Game.state)
+		for i in range(15):
+			for j in range(15):
+				square_tile = Game.board.get_square([i,j])
+				if square_tile != " ":
+					self.buttons[i][j]["text"] = square_tile + "\n" + str(components.letter_values[square_tile])
+					self.buttons[i][j]["bg"] = "#ffe493"
+					self.buttons[i][j]["fg"] = "black"
+					self.buttons[i][j]["font"] = font.Font(family="Helvetica", size="10", weight="bold")
+				else:
+					self.buttons[i][j]["text"] = components.modifiers[i][j]
+					self.buttons[i][j]["bg"] = components.modifier_colors[components.modifiers[i][j]]
+					self.buttons[i][j]["fg"] = "white"
+					self.buttons[i][j]["font"] = font.Font(family="Helvetica", size="10")
+		
+		self.playerData["text"] = Game.players[0].get_name() + ": " + str(Game.players[0].get_score()) \
+									+ "      " + Game.players[1].get_name() + ": " + str(Game.players[1].get_score()) \
+									+ "\nCurrent Turn: " + Game.get_current_turn_player().get_name()
+
+		if Game.get_current_turn_player().get_name() == "PLAYER_1":
+			self.rack["text"] = "rack: " + Game.players[0].get_tile_rep()
 		else:
-			if len(player.rack) == 0 | self.last_skipped == True:
-				self.end_game()
-				print("Game End Sequence Initiated - No tiles left in rack")
-				self.screen.restart_game(self)
-			else:
-				self.state = "human_turn"
-				self.screen.update(self)
-				#pass back to ui for human turn
-				pass
+			self.rack["text"] = "rack: " + Game.players[1].get_tile_rep()
 
-	def end_game(self):
-		player = self.get_current_turn_player()
-		opponent = self.get_next_turn_player()
-		opponent.score += player.get_rack_score()
-		player.score -= player.get_rack_score()
-		print("Game End Sequence Initiated")
-		self.state = "end_game"
-		if player.score > opponent.score:
-			self.message = player.get_name() + " won the game! " + str(player.score) + " to " + str(opponent.score)
-			#Writing Data to File
-			with open("totalgamedata.txt", "a+") as out_file:
-				with open("currentgamedata.text", "r") as in_file:
-					for line in in_file:
-						if str(player.get_name()) in line:
-							out_file.write(line.rstrip('\n') + " Win: 1 " + "\n")
-						else:
-							out_file.write(line.rstrip('\n') + " Win: -1 " + "\n")
-		elif player.score < opponent.score:
-			#Message Update
-			self.message = opponent.get_name() + " won the game! " + str(opponent.score) + " to " + str(player.score)
-			#Writing Data to File
-			with open("totalgamedata.txt", "a+") as out_file:
-				with open("currentgamedata.txt", "r") as in_file:
-					for line in in_file:
-						if str(opponent.get_name()) in line:
-							out_file.write(line.rstrip('\n') + " Win: 1 " + "\n")
-						else:
-							out_file.write(line.rstrip('\n') + " Win: -1 " + "\n")
+		self.turnlabel["text"] = "Turn: " + str(Game.turn)
+
+		self.entryTextbox.delete(0, 'end')
+		
+		if Game.state == "human_turn":
+			self.errorButton.grid_remove()
+			self.errorMessage.grid_remove()
+			self.quitButton.grid_remove()
+			self.quitMessage.grid_remove()
+			self.restartButton.grid_remove()
+			self.AIMessage.grid_remove()
+			#Add back human prompts
+			self.start_tile_text.grid()
+			self.rack.grid()
+			self.enter.grid()
+			self.entrylabel.grid()
+			self.entryTextbox.grid()
+			self.alignmentLabel.grid()
+			self.alignmentToggle.grid()
+			self.skipButton.grid()
+			self.endButton.grid()
+		#Create AI waiting screen?
+		elif Game.state == "ai_turn":
+			#Remove human move prompts
+			self.start_tile_text.grid_remove()
+			self.rack.grid_remove()
+			self.enter.grid_remove()
+			self.entrylabel.grid_remove()
+			self.entryTextbox.grid_remove()
+			self.alignmentLabel.grid_remove()
+			self.alignmentToggle.grid_remove()
+			self.errorButton.grid_remove()
+			self.errorMessage.grid_remove()
+			self.skipButton.grid_remove()
+			self.quitButton.grid_remove()
+			self.quitMessage.grid_remove()
+			self.restartButton.grid_remove()
+			self.endButton.grid_remove()
+			#Add AI is thinking label
+			self.AIMessage.grid()
+		elif Game.state == "ERROR":
+			self.start_tile_text.grid_remove()
+			self.rack.grid_remove()
+			self.enter.grid_remove()
+			self.entrylabel.grid_remove()
+			self.entryTextbox.grid_remove()
+			self.alignmentLabel.grid_remove()
+			self.alignmentToggle.grid_remove()
+			self.skipButton.grid_remove()
+			self.endButton.grid_remove()
+			self.restartButton.grid_remove()
+			self.AIMessage.grid_remove()
+			#Add AI crap
+			self.errorMessage["text"] = Game.message
+			self.errorButton.grid()
+			self.errorMessage.grid()
 		else:
-			#Message Update
-			self.message = "It was a tie! " + str(player.score) + " to " + str(opponent.score)
-			#Writing Data to File
-			with open("totalgamedata.txt", "a+") as out_file:
-				with open("currentgamedata.text", "r") as in_file:
-					for line in in_file:
-						if str(player.get_name()) in line:
-							out_file.write(line.rstrip('\n') + " Win: -1 " + "\n")
-						else:
-							out_file.write(line.rstrip('\n') + " Win: -1 " + "\n")
-		self.screen.update(self)
-			
+			self.start_tile_text.grid_remove()
+			self.rack.grid_remove()
+			self.enter.grid_remove()
+			self.entrylabel.grid_remove()
+			self.entryTextbox.grid_remove()
+			self.alignmentLabel.grid_remove()
+			self.alignmentToggle.grid_remove()
+			self.skipButton.grid_remove()
+			self.endButton.grid_remove()
+			self.AIMessage.grid_remove()
+			#Add AI crap
+			self.quitMessage["text"] = Game.message
+			self.quitButton.grid()
+			self.quitMessage.grid()
+			self.restartButton.grid()
 
 
-types = [True, True]
-if len(sys.argv[1:]) == 2:
-	for i in [0,1]:
-		if sys.argv[i+1].lower() == "ai":
-			types[i] = True
-		elif sys.argv[i+1].lower() == "human":
-			types[i] = False
-		else:
-			print("Unrecognized player type")
-			sys.exit()
-
-
-player1 = ["PLAYER_1", types[0]]
-player2 = ["PLAYER_2", types[1]]
-
-print("Starting game....")
-
-main = Game(player1, player2)
-
-print("Game ending....")
-
+		self.root.update_idletasks()
+		self.root.update()
