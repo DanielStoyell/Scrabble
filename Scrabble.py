@@ -18,6 +18,7 @@ class Game:
 		self.turn = 1
 		self.message = ""
 		self.state = "human_turn"
+		self.last_skipped = False 
 
 		# Define both players and store in player array (somewhat generalizable to >2 players but for now just 2)
 		player1 = components.Player(player0info[0], self.bag.draw_tiles(7), player0info[1])
@@ -45,12 +46,7 @@ class Game:
 		opponent = self.get_next_turn_player()
 		if state == "human_turn":
 			is_valid, message = self.board.is_valid_move(word, square[:], direction, player.get_tiles())
-			if len(player.rack) == 0:
-				player.score += opponent.get_rack_score()
-				opponent.score -= opponent.get_rack_score()
-				print("Game End Sequence Initiated - No tiles left in rack")
-				self.state = "end_game"
-			elif is_valid >= 0:
+			if is_valid >= 0:
 				score, letters_used = self.board.play_move(word, square[:], direction, player.get_tiles())
 				player.score += score
 				self.turn += 1
@@ -97,21 +93,37 @@ class Game:
 				else:
 					print("The ai fucked up")
 			else:
-				current.close()
-				
 				print("AI chose to skip")
+				print(self.last_skipped)
 
+				#Skip Logic
+				if self.last_skipped == False:
+					self.last_skipped = True
+				else:
+					self.end_game()
+					self.screen.restart_game(self)
+				
 			self.turn += 1
 		
 		if opponent.is_ai():
-			self.state = "ai_turn"
-			self.screen.update(self)
-			self.run_turn("ai_turn")
+			if len(player.rack) == 0:
+				self.end_game()
+				print("Game End Sequence Initiated - No tiles left in rack")
+				self.screen.restart_game(self)
+			else:
+				self.state = "ai_turn"
+				self.screen.update(self)
+				self.run_turn("ai_turn")
 		else:
-			self.state = "human_turn"
-			self.screen.update(self)
-			#pass back to ui for human turn
-			pass
+			if len(player.rack) == 0 | self.last_skipped == True:
+				self.end_game()
+				print("Game End Sequence Initiated - No tiles left in rack")
+				self.screen.restart_game(self)
+			else:
+				self.state = "human_turn"
+				self.screen.update(self)
+				#pass back to ui for human turn
+				pass
 
 	def end_game(self):
 		player = self.get_current_turn_player()
@@ -152,10 +164,11 @@ class Game:
 							out_file.write(line.rstrip('\n') + ";-1 " + "\n")
 						else:
 							out_file.write(line.rstrip('\n') + ";-1 " + "\n")
+		self.screen.update(self)
 			
 
 
-types = [False, True]
+types = [True, True]
 if len(sys.argv[1:]) == 2:
 	for i in [0,1]:
 		if sys.argv[i+1].lower() == "ai":
@@ -175,4 +188,6 @@ print("Starting game....")
 main = Game(player1, player2)
 
 print("Game ending....")
+
+
 
