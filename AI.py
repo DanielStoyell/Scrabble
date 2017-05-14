@@ -187,7 +187,7 @@ def choose_move(moves, board, player, turn):
 					bestMove = move
 			return bestMove
 		elif player.heuristic == "BAYES":
-			xTest = learning.binary_construct_test(moves, board, player, turn, True)
+			xTest = learning.construct_test(moves, board, player, turn, True)
 			preds = bayesClassifier(xTest)
 			return moves[learning.getBest(preds)]
 		elif player.heuristic == "NN":

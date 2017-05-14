@@ -207,8 +207,8 @@ if len(sys.argv[1:]) == 2:
 			sys.exit()
 
 
-player1 = ["PLAYER_1", types[0], "KNN"]
-player2 = ["PLAYER_2", types[1], "NN"]
+player1 = ["PLAYER_1", types[0], "BEST_SCORE"]
+player2 = ["PLAYER_2", types[1], "KNN"]
 
 print("Starting game....")
 
