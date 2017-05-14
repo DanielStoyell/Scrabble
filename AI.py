@@ -5,12 +5,6 @@ import learning
 import csv
 import random
 
-
-RAND = 0
-BEST_SCORE = 1
-BAYES = 2
-MOVE_CHOICE = RAND
-
 """
 Example move:
 move = {
@@ -25,11 +19,14 @@ move = {
 
 ### learning Construction ###
 print("Reading in and constructing training data")
+binaryxTr = []
 xTr = []
 yTr = []
 dataFile = open("totalgamedata.txt", "r")
 reader = csv.DictReader(dataFile, delimiter=";")
 for row in reader:
+	v = learning.binary_feature_extract(row)
+	binaryxTr.append(v)
 	v = learning.feature_extract(row)
 	xTr.append(v)
 	yTr.append(int(row["Win"]))
@@ -37,8 +34,12 @@ for row in reader:
 #Trains and returns classifier function
 #classifier function returns distances from linear separator
 #To get classification, take np.sign(preds[i]), where preds is a return value
-print("Training classifier")
-classifier = learning.naivebayesCL(xTr,yTr)
+print("Training naive bayes classifier")
+bayesClassifier = learning.naivebayesCL(binaryxTr,yTr)
+print("Training neural network classifier")
+nnClassifier = learning.nnCL(xTr, yTr)
+print("Training knn classifier")
+knnClassifier = learning.knnCL(xTr, yTr)
 print("classifier training complete")
 
 #### END classifier CONSTRUCTION #####
@@ -175,9 +176,9 @@ def choose_move(moves, board, player, turn):
 	#Given a list of moves, finds the "best" and returns it. Best is defined through ai crap
 	#IMPLEMENT GIVING UP
 	if (len(moves)) > 0:
-		if MOVE_CHOICE == RAND:
+		if player.heuristic == "RAND":
 			return moves[random.randint(0, len(moves)-1)]
-		elif MOVE_CHOICE == BEST_SCORE:
+		elif player.heuristic == "BEST_SCORE":
 			bestScore = 0
 			for move in moves:
 				#print(str_move(move))
@@ -185,10 +186,18 @@ def choose_move(moves, board, player, turn):
 					bestScore = move["score"]
 					bestMove = move
 			return bestMove
-		elif MOVE_CHOICE == BAYES:
-			xTest = learning.construct_test(moves, board, player, turn)
-			preds = classifier(xTest)
+		elif player.heuristic == "BAYES":
+			xTest = learning.binary_construct_test(moves, board, player, turn, True)
+			preds = bayesClassifier(xTest)
 			return moves[learning.getBest(preds)]
+		elif player.heuristic == "NN":
+			xTest = learning.construct_test(moves, board, player, turn, False)
+			bestMoveIndex = learning.find_best(xTest, nnClassifier)
+			return moves[bestMoveIndex]
+		elif player.heuristic == "KNN":
+			xTest = learning.construct_test(moves, board, player, turn, False)
+			bestMoveIndex = learning.find_best(xTest, knnClassifier)
+			return moves[bestMoveIndex]
 		else:
 			return moves[0]
 	else:	

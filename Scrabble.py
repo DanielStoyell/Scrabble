@@ -25,8 +25,8 @@ class Game:
 		print(player0info[1])
 
 		# Define both players and store in player array (somewhat generalizable to >2 players but for now just 2)
-		player1 = components.Player(player0info[0], self.bag.draw_tiles(7), player0info[1])
-		player2 = components.Player(player1info[0], self.bag.draw_tiles(7), player1info[1])
+		player1 = components.Player(player0info[0], self.bag.draw_tiles(7), player0info[1], player0info[2])
+		player2 = components.Player(player1info[0], self.bag.draw_tiles(7), player1info[1], player1info[2])
 		self.players = [player1, player2]
 		if self.get_current_turn_player().is_ai():
 			self.state = "ai_turn"
@@ -207,8 +207,8 @@ if len(sys.argv[1:]) == 2:
 			sys.exit()
 
 
-player1 = ["PLAYER_1", types[0]]
-player2 = ["PLAYER_2", types[1]]
+player1 = ["PLAYER_1", types[0], "KNN"]
+player2 = ["PLAYER_2", types[1], "NN"]
 
 print("Starting game....")
 

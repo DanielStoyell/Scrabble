@@ -73,11 +73,12 @@ def get_letter_value(self, letter):
 	return letter_values[letter]
 
 class Player:
-	def __init__(self, name, start_tiles, ai):
+	def __init__(self, name, start_tiles, ai, heuristic):
 		self.score = 0
 		self.name = name
 		self.rack = start_tiles
 		self.ai = ai
+		self.heuristic = heuristic
 
 	def get_score(self):
 		return self.score
