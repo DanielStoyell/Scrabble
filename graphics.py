@@ -133,20 +133,19 @@ class Screen:
 		opponent = Game.get_next_turn_player()
 		if opponent.is_ai():
 			Game.turn += 1
-			Game.last_skipped = True 
 			Game.state = "ai_turn"
 			self.update(Game)
-			Game.run_turn("ai_turn")
+			Game.run_turn("ai_turn") 
 		else:
 			Game.turn += 1
 			if Game.last_skipped == True:
-				Game.state = "end_game"
+				Game.end_game()
 			else:
 				Game.state = "human_turn"
 			self.update(Game)
-			Game.last_skipped = True
 			#pass back to ui for human turn
 			pass
+		Game.last_skipped = True
 
 	def confirm_error(self, Game):
 		print("confirm error")
