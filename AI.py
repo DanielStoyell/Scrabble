@@ -199,7 +199,7 @@ def get_AI_move(board, player, turn, screen):
 	#print("################################")
 	#print(player.rack)
 	if board.isEmpty:
-		moves = anagram_checker(" "*15, 7, player.rack, "Horizontal", [7,7], board, set())
+		moves = anagram_checker(" "*15, 7, player.rack, "Horizontal", [7,7], board)
 	else:
 		playable_squares = get_playable_squares(board)
 		start = time.clock()
