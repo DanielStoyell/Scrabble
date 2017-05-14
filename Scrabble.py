@@ -22,16 +22,20 @@ class Game:
 		self.state = "human_turn"
 		self.last_skipped = False 
 
+		print(player0info[1])
+
 		# Define both players and store in player array (somewhat generalizable to >2 players but for now just 2)
 		player1 = components.Player(player0info[0], self.bag.draw_tiles(7), player0info[1])
 		player2 = components.Player(player1info[0], self.bag.draw_tiles(7), player1info[1])
 		self.players = [player1, player2]
-		self.screen = graphics.Screen(self)
 		if self.get_current_turn_player().is_ai():
+			print("gottem")
 			self.state = "ai_turn"
+			self.screen = graphics.Screen(self)
 			self.run_turn("ai_turn")
 		else:
 			self.state = "human_turn"
+			self.screen = graphics.Screen(self)
 		self.screen.root.mainloop()
 
 	def get_current_turn_player(self):

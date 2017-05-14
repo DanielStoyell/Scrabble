@@ -1,15 +1,8 @@
 TODO:
 
-Bugs:
-	1. Branch word multipliers
-
 Misc:
-	1. Running ai vs ai
-	2. The ai giving up / ai endgame logic
 	3. Run AI vs AI many times
 	4. Generate a shitton of moves
-	5. Convert moves to vector
-	6. Create classifier
 
 AI stuff:
 	1. Fix bugs
