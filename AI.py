@@ -9,7 +9,7 @@ import random
 RAND = 0
 BEST_SCORE = 1
 BAYES = 2
-MOVE_CHOICE = BEST_SCORE
+MOVE_CHOICE = RAND
 
 """
 Example move:

@@ -1,6 +1,6 @@
 import numpy as np
 
-FEATURES_LENGTH = 409
+FEATURES_LENGTH = 459
 
 def feature_extract(move):
 	v = [0]*FEATURES_LENGTH
@@ -27,8 +27,11 @@ def feature_extract(move):
 	v[(start_square[0]*15+start_square[1])+i] = 1
 	i += 15*15
 
-	v[min(int(int(move["Score"])%10), 20)+i] = 1
-	i+=20
+	v[min(int(int(move["Player_Score"])%10), 50)+i] = 1
+	i += 50
+
+	v[min(int(int(move["Move_Score"])%10), 20)+i] = 1
+	i += 20
 
 	return v
 
@@ -71,7 +74,6 @@ def naivebayesCL(x,y):
 	x = np.array(x)
 	y = np.array(y)
 	n, d = x.shape
-	## fill in code here
 	
 	posprob, negprob = naivebayesPXY(x,y)
 	pos, neg = naivebayesPY(x,y)
@@ -98,7 +100,8 @@ def construct_test(moves, board, player, turn):
 			"Rack": str(player.rack),
 			"Direction": move["direction"],
 			"Start": str(move["square"]),
-			"Score": str(move["score"])
+			"Move_Score": str(move["score"]),
+			"Player_Score": str(player.score)
 		}
 		xTest.append(feature_extract(m))
 	return xTest

@@ -20,6 +20,7 @@ class Game:
 		self.message = ""
 		self.state = "human_turn"
 		self.last_skipped = False 
+		self.start_time = time.clock()
 
 		print(player0info[1])
 
@@ -28,7 +29,6 @@ class Game:
 		player2 = components.Player(player1info[0], self.bag.draw_tiles(7), player1info[1])
 		self.players = [player1, player2]
 		if self.get_current_turn_player().is_ai():
-			print("gottem")
 			self.state = "ai_turn"
 			self.screen = graphics.Screen(self)
 			self.run_turn("ai_turn")
@@ -61,7 +61,7 @@ class Game:
 				line = str(player.get_name()) + ";" + str(self.turn) + ";" + word + \
 					       ";" + str(len(word)) + ";" + ''.join(player.rack) + \
 					       ";" + ''.join(letters_used) + ";" + direction + ";" + str(square) + \
-				           ";" + str(player.score) + "\n"
+				           ";" + str(player.score) + ";" + str(score) + "\n"
 				current.write(line)
 				current.close()
 				#Logic for Rack Update
@@ -85,7 +85,7 @@ class Game:
 					line = str(player.get_name()) + ";" + str(self.turn) + ";" + ai_move["word"] + \
 					       ";" + str(len(ai_move["word"])) + ";" + ''.join(player.rack) + \
 					       ";" + ''.join(letters_used) + ";" + ai_move["direction"] + ";" + str(ai_move["square"]) + \
-				           ";" + str(player.score) + "\n"
+				           ";" + str(player.score) + ";" + str(ai_move["score"]) + "\n"
 					current.write(line)
 					current.close()
 					#Pick new tiles
@@ -177,9 +177,9 @@ class Game:
 				with open("currentgamedata.txt", "r") as in_file:
 					for line in in_file:
 						if str(opponent.get_name()) in line:
-							out_file.write(line.rstrip('\n') + ";1 " + "\n")
+							out_file.write(line.rstrip('\n') + ";1" + "\n")
 						else:
-							out_file.write(line.rstrip('\n') + ";-1 " + "\n")
+							out_file.write(line.rstrip('\n') + ";-1" + "\n")
 		else:
 			#Message Update
 			self.message = "It was a tie! " + str(player.score) + " to " + str(opponent.score)
@@ -188,9 +188,9 @@ class Game:
 				with open("currentgamedata.text", "r") as in_file:
 					for line in in_file:
 						if str(player.get_name()) in line:
-							out_file.write(line.rstrip('\n') + ";-1 " + "\n")
+							out_file.write(line.rstrip('\n') + ";-1" + "\n")
 						else:
-							out_file.write(line.rstrip('\n') + ";-1 " + "\n")
+							out_file.write(line.rstrip('\n') + ";-1" + "\n")
 		self.screen.update(self)
 			
 

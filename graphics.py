@@ -3,6 +3,7 @@ import components
 from tkinter import font
 from tkinter import *
 from tkinter import ttk
+import time
 
 class Screen:
 	def __init__(self, Game):
@@ -163,6 +164,8 @@ class Screen:
 
 	def restart_game(self, Game):
 		print("restarting game")
+		elapsed = time.clock() - Game.start_time
+		print("Time elapsed: " + str(elapsed))
 		self.root.destroy()
 		player1 = ["PLAYER_1", True]
 		player2 = ["PLAYER_2", True]
